@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void transitionToJourneyInfo(View view){
         View journeyTitleView = findViewById(R.id.journey_title);
-        Intent intent = new Intent(this, JourneyInfo.class);
+        Intent intent = new Intent(this, JourneyActivity.class);
         Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                 this,
                 journeyTitleView,

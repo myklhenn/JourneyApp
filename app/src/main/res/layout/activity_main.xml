@@ -13,9 +13,9 @@
         android:layout_height="match_parent"
         android:id="@+id/transition_container">
 
-        <include layout="@layout/journeys" />
-        <include layout="@layout/buddies" />
-        <include layout="@layout/settings" />
+        <include layout="@layout/view_journeys" />
+        <include layout="@layout/view_buddies" />
+        <include layout="@layout/view_settings" />
 
     </FrameLayout>
 

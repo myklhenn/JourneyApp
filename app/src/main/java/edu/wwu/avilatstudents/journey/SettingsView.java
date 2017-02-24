@@ -11,11 +11,6 @@ import android.view.ViewGroup;
  * Created by avila_000 on 2/14/2017.
  */
 
-public class Buddies extends Fragment {
+public class SettingsView {
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.buddies, container, false);
-    }
 }

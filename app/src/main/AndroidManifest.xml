@@ -15,7 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".JourneyInfo"></activity>
+        <activity android:name=".JourneyActivity" />
+        <activity android:name=".AddBuddyActivity" />
+        <activity android:name=".BuddyInfoActivity" />
+        <activity android:name=".JourneyHistoryActivity" />
+        <activity android:name=".NewJourneyModeActivity" />
+        <activity android:name=".NewJourneyLocationActivity" />
+        <activity android:name=".NewJourneyBuddiesActivity" />
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
