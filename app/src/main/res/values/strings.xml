@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Journey</string>
     <string name="transition_journey_title">Journey</string>
+    <string name="add_buddy_btn_desc">Add A New Buddy</string>
+    <string name="journeys_search_hint">Search Journeys</string>
+    <string name="journey_hist_search_hint">Search Journey History</string>
+    <string name="buddies_search_hint">Search Buddies</string>
 </resources>
