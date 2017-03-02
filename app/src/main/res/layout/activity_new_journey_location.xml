@@ -1,13 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_new_journey_location"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frameLayoutFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.wwu.avilatstudents.journey.NewJourneyLocationActivity">
+    android:layout_height="fill_parent" >
 
-</RelativeLayout>
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.cs497.brendanbaalke.jourjourbinks.MapsActivity"
+        map:uiRotateGestures="true"
+        map:uiScrollGestures="true"
+        map:uiTiltGestures="true"
+        map:uiZoomControls="true"
+        map:uiZoomGestures="true"/>
+
+    <TextView
+        android:id="@+id/chooseOne"
+        android:layout_width="match_parent"
+        android:layout_height="150px"
+        android:textColor="#0020C2"
+        android:gravity="center_horizontal"
+        android:textSize="20dip"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:visibility="visible"
+        android:text="CHOOSE WHERE TO BEGIN"/>
+    <TextView
+        android:id="@+id/chooseTwo"
+        android:layout_width="match_parent"
+        android:layout_height="150px"
+        android:gravity="center_horizontal"
+        android:textColor="#E41B17"
+        android:textSize="20dip"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:visibility="gone"
+        android:text="CHOOSE WHERE TO END"/>
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_marginTop="150px"
+        android:gravity="center_horizontal"
+        android:textColor="#040404"
+        android:textSize="20dip"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:visibility="gone"
+        android:text=""/>
+    <Button
+        android:id="@+id/backbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="150px"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:text="UNDO"
+        android:background="@android:color/holo_blue_dark"
+        android:textColor="@android:color/white"
+        android:shadowColor="@android:color/darker_gray"
+        android:textColorHighlight="@android:color/black"
+        android:visibility="gone"/>
+    <Button
+        android:id="@+id/pathbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="150px"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_marginLeft="240px"
+        android:text="GENERATE ROUTE"
+        android:background="@android:color/holo_blue_light"
+        android:textColor="@android:color/white"
+        android:shadowColor="@android:color/darker_gray"
+        android:textColorHighlight="@android:color/black"
+        android:visibility="gone"/>
+    <Button
+        android:id="@+id/finishbutton"
+        android:layout_width="match_parent"
+        android:layout_height="150px"
+        android:layout_alignTop="@id/map"
+        android:layout_gravity="top|center_horizontal"
+        android:gravity="center"
+        android:text="BEGIN JOURNEY"
+        android:background="@android:color/holo_orange_dark"
+        android:textColor="@android:color/white"
+        android:shadowColor="@android:color/darker_gray"
+        android:textColorHighlight="@android:color/black"
+        android:visibility="gone"/>
+</FrameLayout>
