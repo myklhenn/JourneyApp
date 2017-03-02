@@ -25,7 +25,7 @@ class JourneyListAdapter extends ArrayAdapter<String>{
     private final int[] progresses;
 
     JourneyListAdapter(Activity context, String[] names, int[] progresses) {
-        super(context, R.layout.item_journey, names, progresses);
+        super(context, R.layout.item_journey, names);
         this.context = context;
         this.names = names;
         this.progresses = progresses;
@@ -37,9 +37,9 @@ class JourneyListAdapter extends ArrayAdapter<String>{
         LayoutInflater inflater = context.getLayoutInflater();
         View journeyCard = inflater.inflate(R.layout.item_journey, null, true);
         TextView journeyName = (TextView) journeyCard.findViewById(R.id.journey_card_name);
-        ProgressBar journeyProgress = (ProgressBar) journeyCard.findViewById(R.id.journey);
-        buddyName.setText(buddies[pos]);
-        imageView.setImageResource(R.drawable.ic_person_black_24dp);
+        ProgressBar journeyProgress = (ProgressBar) journeyCard.findViewById(R.id.journey_card_progress);
+        journeyName.setText(names[pos]);
+        journeyProgress.setProgress(progresses[pos]);
 
         return journeyCard;
     }

@@ -5,5 +5,6 @@
     <color name="colorAccent">#F2ECCC</color>
     <color name="mainNavBase">#f2eccc</color>
     <color name="mainNavSelected">#FF6666</color>
-    <color name="tab_background_selected">#FFFFFF</color>
+    <color name="tab_background_selected">#ffffff</color>
+    <color name="journeyCardBkg">#dbdbdb</color>
 </resources>

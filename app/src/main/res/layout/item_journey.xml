@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_near_me_black_24dp"
+        android:id="@+id/journey_card_map"
+        android:layout_width="match_parent"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:background="@color/journeyCardBkg" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/journey_card_progress"
+        android:background="@color/journeyCardBkg" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/journey_card_name"
+        android:paddingStart="15dp"
+        android:textSize="18sp"
+        android:background="@color/journeyCardBkg"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp" />
 </LinearLayout>
