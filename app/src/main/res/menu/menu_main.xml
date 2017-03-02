@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/tools"
+    xmlns:appcompat="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Add A New Buddy"
+        android:id="@+id/add_buddy_item"
+        android:icon="@drawable/ic_person_add_black_24dp"
+        appcompat:showAsAction="always" />
+
+    <item
+        android:title="View Journey History"
+        android:id="@+id/journey_hist_item"
+        android:icon="@drawable/ic_access_time_black_24dp"
+        appcompat:showAsAction="always" />
+
+    <item
+        android:title="Add A New Journey"
+        android:id="@+id/new_journey_item"
+        android:icon="@drawable/ic_add_black_24dp"
+        appcompat:showAsAction="always" />
+</menu>

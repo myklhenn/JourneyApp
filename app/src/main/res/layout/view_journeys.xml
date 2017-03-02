@@ -1,29 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tab_background_selected"
     android:id="@+id/journeys_layout"
     android:visibility="visible">
 
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:id="@+id/journey_title"
-            android:transitionName="@string/transition_journey_title"
-            android:onClick="transitionToJourneyInfo">
+            android:layout_height="match_parent">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:text="ACTIVE"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Journey Title"/>
-        </RelativeLayout>
+                android:id="@+id/active_journeys_label"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp" />
 
-    </LinearLayout>
+            <GridView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/active_journey_cards"
+                android:layout_margin="10dp" />
+
+            <TextView
+                android:text="INVITES"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/invited_journeys_label"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp" />
+
+            <GridView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/invited_journey_cards"
+                android:layout_margin="10dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </FrameLayout>
