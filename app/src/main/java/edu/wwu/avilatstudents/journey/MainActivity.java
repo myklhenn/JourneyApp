@@ -1,28 +1,32 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.ActivityOptions;
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    static final int REQUEST_OK = 0;
+    static final int REQUEST_CODE = 1;
+
+    private String username;
 
     private ViewGroup transitionContainer;
     private FrameLayout buddiesLayout;
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton buddiesFab;
     private FloatingActionButton journeysFab;
     private FloatingActionButton settingsFab;
+    private Button signOutButton;
 
     ListView buddiesList;
 
@@ -44,8 +49,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final SessionManager sessionManager = new SessionManager(this);
+        Log.d("login", sessionManager.isLoggedIn() ? "true" : "false");
+        if(sessionManager.isLoggedIn() == false) {
+            sessionManager.login();
+            Log.d("login", "Logging in");
+        }
+
         // set the layout for this activity
         setContentView(R.layout.activity_main);
+
+        username = sessionManager.getUsername();
+        Toast.makeText(MainActivity.this, "Hello " + username + "!", Toast.LENGTH_LONG).show();
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -58,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         buddiesFab = (FloatingActionButton) findViewById(R.id.buddies_fab);
         journeysFab = (FloatingActionButton) findViewById(R.id.journeys_fab);
         settingsFab = (FloatingActionButton) findViewById(R.id.settings_fab);
+
+        signOutButton = (Button) findViewById(R.id.sign_out);
 
         // link the layouts (switched by the nav buttons)
         transitionContainer = (ViewGroup) findViewById(R.id.transition_container);
@@ -108,6 +126,22 @@ public class MainActivity extends AppCompatActivity {
         buddiesFab.setOnClickListener(navFabsOnClickListener);
         journeysFab.setOnClickListener(navFabsOnClickListener);
         settingsFab.setOnClickListener(navFabsOnClickListener);
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sessionManager.logout();
+                actionBar.show();
+                // reset nav buttons to base color (selected color applied appropriately in switch)
+                resetNavButtonColor();
+                setNavButtonColorSelected(journeysFab);
+                updateActionBar(R.id.journeys_fab);
+                visibleLayout.setVisibility(View.GONE);
+                journeysLayout.setVisibility(View.VISIBLE);
+                visibleLayout = journeysLayout;
+                visibleLayout.requestFocus();
+            }
+        });
 
         // display data in testBuddies array in view_buddies
         buddiesList = (ListView) findViewById(R.id.buddies_list);
