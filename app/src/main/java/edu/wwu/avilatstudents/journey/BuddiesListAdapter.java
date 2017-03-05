@@ -1,6 +1,7 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,19 +13,20 @@ import android.widget.TextView;
  * Created by myklhenn on 2/27/17.
  */
 
-public class BuddiesListAdapter extends ArrayAdapter<String>{
+class BuddiesListAdapter extends ArrayAdapter<String>{
 
     private final Activity context;
     private final String[] buddies;
 
-    public BuddiesListAdapter(Activity context, String[] buddies) {
+    BuddiesListAdapter(Activity context, String[] buddies) {
         super(context, R.layout.item_buddy, buddies);
         this.context = context;
         this.buddies = buddies;
     }
 
+    @NonNull
     @Override
-    public View getView(int pos, View view, ViewGroup parent) {
+    public View getView(int pos, View view, @NonNull ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView = inflater.inflate(R.layout.item_buddy, null, true);
         TextView buddyName = (TextView) rowView.findViewById(R.id.buddy_name);

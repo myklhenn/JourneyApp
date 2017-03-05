@@ -1,7 +1,5 @@
 package edu.wwu.avilatstudents.journey;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,10 +11,12 @@ import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -43,8 +43,14 @@ public class MainActivity extends AppCompatActivity {
     private Button signOutButton;
 
     ListView buddiesList;
+    GridView activeJourneyCards;
+    GridView invitedJourneyCards;
 
     String[] testBuddies = {"Mark", "Brendan", "Michael", "Tyler"};
+    String[] testActiveJourneys = {"Active Journey 1", "Active Journey 2", "Active Journey 3"};
+    int[] testActiveJourneysProgress = {20, 65, 70};
+    String[] testInvitedJourneys = {"Invited Journey 1", "Invited Journey 2", "Invited Journey 3"};
+    int[] testInvitedJourneysProgress = {20, 65, 70};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
         // set current layout to journey list view (and color nav button)
         visibleLayout = journeysLayout;
         setNavButtonColorSelected(journeysFab);
-        mainSearch.setQueryHint(getResources().getString(R.string.journeys_search_hint));
-        visibleLayout.requestFocus();
+
 
         // establish listener for navigation button clicks (switch visibility of layouts)
         View.OnClickListener navFabsOnClickListener = new View.OnClickListener() {
@@ -95,32 +100,28 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 TransitionManager.beginDelayedTransition(transitionContainer);
                 visibleLayout.setVisibility(View.GONE);
-                actionBar.show();
-                // reset nav buttons to base color (selected color applied appropriately in switch)
-                resetNavButtonColor();
 
                 switch (view.getId()) {
                     case R.id.buddies_fab:
+                        actionBar.show();
+                        visibleLayout = buddiesLayout;
                         setNavButtonColorSelected(buddiesFab);
                         updateActionBar(R.id.buddies_fab);
-                        buddiesLayout.setVisibility(View.VISIBLE);
-                        visibleLayout = buddiesLayout;
-                        visibleLayout.requestFocus();
                         break;
                     case R.id.journeys_fab:
+                        actionBar.show();
+                        visibleLayout = journeysLayout;
                         setNavButtonColorSelected(journeysFab);
                         updateActionBar(R.id.journeys_fab);
-                        journeysLayout.setVisibility(View.VISIBLE);
-                        visibleLayout = journeysLayout;
-                        visibleLayout.requestFocus();
                         break;
                     case R.id.settings_fab:
-                        setNavButtonColorSelected(settingsFab);
                         actionBar.hide();
-                        settingsLayout.setVisibility(View.VISIBLE);
                         visibleLayout = settingsLayout;
-                        visibleLayout.requestFocus();
+                        setNavButtonColorSelected(settingsFab);
+
                 }
+                visibleLayout.setVisibility(View.VISIBLE);
+                visibleLayout.requestFocus();
             }
         };
         buddiesFab.setOnClickListener(navFabsOnClickListener);
@@ -133,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 sessionManager.logout();
                 actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
-                resetNavButtonColor();
                 setNavButtonColorSelected(journeysFab);
                 updateActionBar(R.id.journeys_fab);
                 visibleLayout.setVisibility(View.GONE);
@@ -148,69 +148,84 @@ public class MainActivity extends AppCompatActivity {
         BuddiesListAdapter bla = new BuddiesListAdapter(this, testBuddies);
         buddiesList.setAdapter(bla);
 
+        activeJourneyCards = (GridView) findViewById(R.id.active_journey_cards);
+        JourneyListAdapter jla1 = new JourneyListAdapter(this, testActiveJourneys, testActiveJourneysProgress);
+        activeJourneyCards.setAdapter(jla1);
+
+        invitedJourneyCards = (GridView) findViewById(R.id.invited_journey_cards);
+        JourneyListAdapter jla2 = new JourneyListAdapter(this, testInvitedJourneys, testInvitedJourneysProgress);
+        invitedJourneyCards.setAdapter(jla2);
+
         // Intent intent = getIntent();
         // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
         //     String query = intent.getStringExtra(SearchManager.QUERY);
         //     // doMySearch(query);
         // }
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         mainOptionsMenu = menu;
-        // inflate menu to add items to action bar if it is present
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_buddies, menu);
+        inflater.inflate(R.menu.menu_main, menu);
+
+        updateActionBar(R.id.journeys_fab);
+        mainSearch.clearFocus();
 
         return true;
     }
 
-    private void updateOptionsMenu() {
-
-    }
-
-    public void transitionToJourneyInfo(View view){
-        View journeyTitleView = findViewById(R.id.journey_title);
-        Intent intent = new Intent(this, JourneyActivity.class);
-        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                this,
-                journeyTitleView,
-                journeyTitleView.getTransitionName())
-                .toBundle();
-        startActivity(intent, bundle);
-    }
+    // public void transitionToJourneyInfo(View view){
+    //     View journeyTitleView = findViewById(R.id.journey_title);
+    //     Intent intent = new Intent(this, JourneyActivity.class);
+    //     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+    //             this,
+    //             journeyTitleView,
+    //             journeyTitleView.getTransitionName())
+    //             .toBundle();
+    //     startActivity(intent, bundle);
+    // }
 
     public void updateActionBar(int fabId) {
         switch (fabId) {
             case R.id.buddies_fab:
-                mainSearch.setQueryHint(getResources().getString(R.string.buddies_search_hint));
                 // (CHANGE WHAT mainSearch ACTUALLY DOES)
+                mainSearch.setQueryHint(getResources().getString(R.string.buddies_search_hint));
+                showOption(R.id.add_buddy_item);
+                hideOption(R.id.new_journey_item);
+                hideOption(R.id.journey_hist_item);
                 break;
             case R.id.journeys_fab:
-                mainSearch.setQueryHint(getResources().getString(R.string.journeys_search_hint));
                 // (CHANGE WHAT mainSearch ACTUALLY DOES)
+                mainSearch.setQueryHint(getResources().getString(R.string.journeys_search_hint));
+                hideOption(R.id.add_buddy_item);
+                showOption(R.id.new_journey_item);
+                showOption(R.id.journey_hist_item);
                 break;
             case R.id.settings_fab:
         }
-
-
-
-        if (mainOptionsMenu != null)
-            onPrepareOptionsMenu(mainOptionsMenu);
     }
 
-    public void resetNavButtonColor() {
+    private void hideOption(int optId) {
+        MenuItem item = mainOptionsMenu.findItem(optId);
+        item.setVisible(false);
+    }
+
+    private void showOption(int optId) {
+        MenuItem item = mainOptionsMenu.findItem(optId);
+        item.setVisible(true);
+    }
+
+    public void setNavButtonColorSelected(FloatingActionButton navButton) {
+        // reset nav buttons to original color
         buddiesFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
         journeysFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
         settingsFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
-    }
-
-    public void setNavButtonColorSelected(FloatingActionButton navButton) {
+        // set specified nav button to selected color
         navButton.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavSelected)));
     }
