@@ -26,13 +26,13 @@
         android:background="@color/journeyCardBkg" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/journey_card_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/journey_card_name"
-        android:paddingStart="15dp"
-        android:textSize="18sp"
         android:background="@color/journeyCardBkg"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp" />
+        android:paddingBottom="5dp"
+        android:paddingStart="15dp"
+        android:paddingTop="0dp"
+        android:text="Journey Title"
+        android:textSize="16sp" />
 </LinearLayout>
