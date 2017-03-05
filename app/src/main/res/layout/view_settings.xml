@@ -6,10 +6,11 @@
     android:id="@+id/settings_layout"
     android:visibility="gone">
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:layout_gravity="center"/>
+        android:text="Sign out"
+        android:layout_gravity="center"
+        android:id="@+id/sign_out"/>
 
 </FrameLayout>
