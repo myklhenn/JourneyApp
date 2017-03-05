@@ -1,13 +1,93 @@
 package edu.wwu.avilatstudents.journey;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.transition.TransitionManager;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.io.UnsupportedEncodingException;
 
 public class LoginActivity extends AppCompatActivity {
+    EditText usernameET, emailET, passwordET, passwordConfirmationET;
+    TextView orTV;
+    ViewGroup editContainer;
+    enum OrStatus {OR_SIGN_UP, OR_LOGIN};
+    OrStatus orStatus;
+    Button loginBtn;
+    SessionManager sessionManager;
+    String username;
+    String authentication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sessionManager = new SessionManager(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        editContainer = (ViewGroup) findViewById(R.id.edit_container);
+        usernameET = (EditText) findViewById(R.id.username);
+        emailET = (EditText) findViewById(R.id.email);
+        passwordET = (EditText) findViewById(R.id.password);
+        passwordConfirmationET = (EditText) findViewById(R.id.password_confirmation);
+        loginBtn = (Button) findViewById(R.id.login);
+        orTV = (TextView) findViewById(R.id.or);
+        orStatus = OrStatus.OR_SIGN_UP;
+
+
+        loginBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                try {
+                    DatabaseManager databaseManager = new DatabaseManager(getApplicationContext());
+                    String url = (orStatus == OrStatus.OR_SIGN_UP ? "http://murmuring-taiga-37698.herokuapp.com/api/v1/sessions" : "http://murmuring-taiga-37698.herokuapp.com/api/v1/registrations");
+                    databaseManager.signUp(url,
+                            usernameET.getText().toString(),
+                            emailET.getText().toString(),
+                            passwordET.getText().toString(),
+                            passwordConfirmationET.getText().toString());
+                    finish();
+                }catch(UnsupportedEncodingException e){
+                    Log.e("loginBtn", "" + e);
+                }
+            }
+        });
+
+        orTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(orStatus == OrStatus.OR_SIGN_UP) createSignUpPage();
+                else createLoginPage();
+            }
+        });
+
+    }
+
+    private void createSignUpPage(){
+        TransitionManager.beginDelayedTransition(editContainer);
+        usernameET.setVisibility(View.VISIBLE);
+        passwordConfirmationET.setVisibility(View.VISIBLE);
+        loginBtn.setText("Sign up");
+        orTV.setText("or Login");
+        orStatus = OrStatus.OR_LOGIN;
+    }
+
+    private void createLoginPage(){
+        TransitionManager.beginDelayedTransition(editContainer);
+        usernameET.setVisibility(View.GONE);
+        passwordConfirmationET.setVisibility(View.GONE);
+        loginBtn.setText("Login");
+        orTV.setText("or Sign up");
+        orStatus = OrStatus.OR_SIGN_UP;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("login", "pressed back");
+        moveTaskToBack(true);
     }
 }
