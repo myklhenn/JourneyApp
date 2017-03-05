@@ -17,17 +17,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class JSONPARSER {
+class JSONPARSER {
 
     static InputStream is = null;
     static JSONObject jObj = null;
     static String json = "";
 
     // constructor
-    public JSONPARSER() {
+    JSONPARSER() {
     }
 
-    public String getJSONFromUrl(String url) {
+    String getJSONFromUrl(String url) {
 
         // Making HTTP request
         try {

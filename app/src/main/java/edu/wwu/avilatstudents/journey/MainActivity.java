@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private Button signOutButton;
 
     ListView buddiesList;
-    GridView activeJourneyCards;
-    GridView invitedJourneyCards;
+    ExpandableHeightGridView activeJourneyCards;
+    ExpandableHeightGridView invitedJourneyCards;
 
     String[] testBuddies = {"Mark", "Brendan", "Michael", "Tyler"};
     String[] testActiveJourneys = {"Active Journey 1", "Active Journey 2", "Active Journey 3"};
@@ -148,13 +148,15 @@ public class MainActivity extends AppCompatActivity {
         BuddiesListAdapter bla = new BuddiesListAdapter(this, testBuddies);
         buddiesList.setAdapter(bla);
 
-        activeJourneyCards = (GridView) findViewById(R.id.active_journey_cards);
+        activeJourneyCards = (ExpandableHeightGridView) findViewById(R.id.active_journey_cards);
         JourneyListAdapter jla1 = new JourneyListAdapter(this, testActiveJourneys, testActiveJourneysProgress);
         activeJourneyCards.setAdapter(jla1);
+        activeJourneyCards.setExpanded(true);
 
-        invitedJourneyCards = (GridView) findViewById(R.id.invited_journey_cards);
+        invitedJourneyCards = (ExpandableHeightGridView) findViewById(R.id.invited_journey_cards);
         JourneyListAdapter jla2 = new JourneyListAdapter(this, testInvitedJourneys, testInvitedJourneysProgress);
         invitedJourneyCards.setAdapter(jla2);
+        activeJourneyCards.setExpanded(true);
 
         // Intent intent = getIntent();
         // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
