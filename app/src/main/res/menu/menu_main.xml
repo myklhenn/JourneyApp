@@ -20,4 +20,5 @@
         android:id="@+id/new_journey_item"
         android:icon="@drawable/ic_add_black_24dp"
         appcompat:showAsAction="always" />
+
 </menu>

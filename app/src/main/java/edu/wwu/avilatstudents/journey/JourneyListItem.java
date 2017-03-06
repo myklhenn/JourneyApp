@@ -1,32 +1,33 @@
 package edu.wwu.avilatstudents.journey;
 
 /**
- * Created by myklhenn on 2/28/17.
+ * Created by myklhenn on 3/5/17.
  */
 
-public class JourneyCard {
+class JourneyListItem {
 
     private String name;
     private int progress;
 
-    public JourneyCard(String name, int progress) {
+    JourneyListItem(String name, int progress) {
         this.name = name;
         this.progress = progress;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
-    public int getProgress() {
+    int getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    void setProgress(int progress) {
         this.progress = progress;
     }
+
 }

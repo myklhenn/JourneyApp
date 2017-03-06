@@ -1,7 +1,5 @@
 package edu.wwu.avilatstudents.journey;
 
-import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.hardware.Sensor;
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout journeysLayout;
     private FrameLayout settingsLayout;
     private FrameLayout visibleLayout;
+
     private ActionBar actionBar;
     private SearchView mainSearch;
     private Menu mainOptionsMenu;
@@ -53,18 +52,23 @@ public class MainActivity extends AppCompatActivity {
     ExpandableHeightGridView activeJourneyCards;
     ExpandableHeightGridView invitedJourneyCards;
 
-    String[] testBuddies = {"Mark", "Brendan", "Michael", "Tyler"};
-
-    JourneyCard[] testActiveJourneys = {
-        new JourneyCard("Active Journey 1", 20),
-        new JourneyCard("Active Journey 2", 65),
-        new JourneyCard("Active Journey 3", 70),
+    BuddiesListItem[] testBuddies = {
+        new BuddiesListItem("Mark"),
+        new BuddiesListItem("Brendan"),
+        new BuddiesListItem("Michael"),
+        new BuddiesListItem("Tyler")
     };
 
-    JourneyCard[] testInvitedJourneys = {
-        new JourneyCard("Invited Journey 1", 20),
-        new JourneyCard("Invited Journey 2", 65),
-        new JourneyCard("Invited Journey 3", 70),
+    JourneyListItem[] testActiveJourneys = {
+        new JourneyListItem("Active Journey 1", 20),
+        new JourneyListItem("Active Journey 2", 65),
+        new JourneyListItem("Active Journey 3", 70),
+    };
+
+    JourneyListItem[] testInvitedJourneys = {
+        new JourneyListItem("Invited Journey 1", 20),
+        new JourneyListItem("Invited Journey 2", 65),
+        new JourneyListItem("Invited Journey 3", 70),
     };
 
     @Override
@@ -186,24 +190,67 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        mainSearch.clearFocus();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         mainOptionsMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-
         updateActionBar(R.id.journeys_fab);
         mainSearch.clearFocus();
+
+        // link all menu items
+        MenuItem addBuddyItem = mainOptionsMenu.findItem(R.id.add_buddy_item);
+        MenuItem journeyHistoryItem = mainOptionsMenu.findItem(R.id.journey_hist_item);
+        MenuItem newJourneyItem = mainOptionsMenu.findItem(R.id.new_journey_item);
+
+        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Class nextActivity;
+                switch (item.getItemId()) {
+                    case R.id.add_buddy_item:
+                        nextActivity = AddBuddyActivity.class;
+                        break;
+                    case R.id.journey_hist_item:
+                        nextActivity = JourneyHistoryActivity.class;
+                        break;
+                    default: // R.id.new_journey_item
+                        nextActivity = NewJourneyNameActivity.class;
+                }
+                Intent menuItemRes = new Intent(MainActivity.this, nextActivity);
+                startActivity(menuItemRes);
+                return true;
+            }
+        };
+        addBuddyItem.setOnMenuItemClickListener(listener);
+        journeyHistoryItem.setOnMenuItemClickListener(listener);
+        newJourneyItem.setOnMenuItemClickListener(listener);
 
         return true;
     }
 
     public void prepareBuddiesList() {
         buddiesList = (ListView) findViewById(R.id.buddies_list);
-        BuddiesListAdapter bla = new BuddiesListAdapter(this, testBuddies);
+        BuddiesListItemAdapter bla = new BuddiesListItemAdapter(this, testBuddies);
         buddiesList.setAdapter(bla);
+        buddiesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+            BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
+            //View buddiesView = findViewById(R.id.buddies_layout);
 
-        // buddiesList.setOnItemClickListener(new OnItemClickListener(){ ...
+            Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
+            showBuddyInfo.putExtra("buddyName", buddy.getName());
+            startActivity(showBuddyInfo);
+            }
+        });
     }
 
     public void prepareJourneysLists() {
@@ -211,12 +258,12 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                JourneyCard journeyCard = (JourneyCard) parent.getItemAtPosition(pos);
-                View journeyView = findViewById(R.id.journey_view);
+            JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
+            //View journeyView = findViewById(R.id.activity_journey);
 
-                Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
-                showJourney.putExtra("journeyName", journeyCard.getName());
-                startActivity(showJourney);
+            Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
+            showJourney.putExtra("journeyName", journey.getName());
+            startActivity(showJourney);
             }
         };
 
@@ -231,20 +278,20 @@ public class MainActivity extends AppCompatActivity {
         invitedJourneyCards = (ExpandableHeightGridView) findViewById(R.id.invited_journey_cards);
         JourneyListAdapter jla2 = new JourneyListAdapter(this, testInvitedJourneys);
         invitedJourneyCards.setAdapter(jla2);
-        activeJourneyCards.setExpanded(true);
+        invitedJourneyCards.setExpanded(true);
         invitedJourneyCards.setOnItemClickListener(listener);
     }
 
-    public void transitionToJourneyActivity(View view){
-        View journeyTitleView = findViewById(R.id.journey_title);
-        Intent intent = new Intent(this, JourneyActivity.class);
-        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                this,
-                journeyTitleView,
-                journeyTitleView.getTransitionName())
-                .toBundle();
-        startActivity(intent, bundle);
-    }
+//    public void transitionToJourneyActivity(View view){
+//        View journeyTitleView = findViewById(R.id.journey_title);
+//        Intent intent = new Intent(this, JourneyActivity.class);
+//        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+//                this,
+//                journeyTitleView,
+//                journeyTitleView.getTransitionName())
+//                .toBundle();
+//        startActivity(intent, bundle);
+//    }
 
     public void updateActionBar(int fabId) {
         switch (fabId) {
