@@ -1,6 +1,7 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 public class LoginActivity extends AppCompatActivity {
     EditText usernameET, emailET, passwordET, passwordConfirmationET;
+    TextInputLayout usernameTIL, passwordConfirmationTIL;
     TextView orTV;
     ViewGroup editContainer;
     enum OrStatus {OR_SIGN_UP, OR_LOGIN};
@@ -26,9 +28,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         editContainer = (ViewGroup) findViewById(R.id.edit_container);
+        usernameTIL = (TextInputLayout) findViewById(R.id.username_layout);
         usernameET = (EditText) findViewById(R.id.username);
         emailET = (EditText) findViewById(R.id.email);
         passwordET = (EditText) findViewById(R.id.password);
+        passwordConfirmationTIL = (TextInputLayout) findViewById(R.id.password_confirmation_layout);
         passwordConfirmationET = (EditText) findViewById(R.id.password_confirmation);
         loginBtn = (Button) findViewById(R.id.login);
         orTV = (TextView) findViewById(R.id.or);
@@ -71,12 +75,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        emailET.clearFocus();
     }
 
     private void createSignUpPage(){
         TransitionManager.beginDelayedTransition(editContainer);
-        usernameET.setVisibility(View.VISIBLE);
-        passwordConfirmationET.setVisibility(View.VISIBLE);
+        usernameTIL.setVisibility(View.VISIBLE);
+        passwordConfirmationTIL.setVisibility(View.VISIBLE);
         loginBtn.setText("Sign up");
         orTV.setText("or Login");
         orStatus = OrStatus.OR_LOGIN;
@@ -84,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void createLoginPage(){
         TransitionManager.beginDelayedTransition(editContainer);
-        usernameET.setVisibility(View.GONE);
-        passwordConfirmationET.setVisibility(View.GONE);
+        usernameTIL.setVisibility(View.GONE);
+        passwordConfirmationTIL.setVisibility(View.GONE);
         loginBtn.setText("Login");
         orTV.setText("or Sign up");
         orStatus = OrStatus.OR_SIGN_UP;
