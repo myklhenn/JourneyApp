@@ -171,7 +171,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         }
         @Override
         protected String doInBackground(Void... params) {
-            JSONPARSER jParser = new JSONPARSER();
+            JSONParser jParser = new JSONParser();
             return jParser.getJSONFromUrl(url);
         }
         @Override

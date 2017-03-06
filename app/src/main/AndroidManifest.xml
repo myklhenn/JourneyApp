@@ -31,7 +31,7 @@
         <activity android:name=".AddBuddyActivity"/>
         <activity android:name=".BuddyInfoActivity"/>
         <activity android:name=".JourneyHistoryActivity"/>
-        <activity android:name=".NewJourneyModeActivity"/>
+        <activity android:name=".NewJourneyNameActivity"/>
         <activity android:name=".NewJourneyLocationActivity"/>
         <activity android:name=".NewJourneyBuddiesActivity"/>
         <activity android:name=".LoginActivity"/>

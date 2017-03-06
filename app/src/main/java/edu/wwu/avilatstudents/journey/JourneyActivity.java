@@ -15,6 +15,7 @@ public class JourneyActivity extends AppCompatActivity {
 
         journeyTitleView = (TextView) findViewById(R.id.journey_title);
         String journeyTitle = getIntent().getExtras().getString("journeyName");
-        journeyTitleView.setText(journeyTitle);
+        if (journeyTitle != null)
+            journeyTitleView.setText(journeyTitle);
     }
 }
