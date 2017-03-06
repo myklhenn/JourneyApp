@@ -24,13 +24,14 @@ import java.net.URL;
 public class DatabaseManager {
     Context context;
     private StringBuilder dbResponse;
+    private static final String API_VERSION = "v1";
 
+    public static final String SIGN_OUT_URI = "http://localhost:3000/api/" + API_VERSION + "/sessions/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
-
 
     public String login(String url, String email, String password){
         JSONObject jsonObjectUser = null;
@@ -76,6 +77,22 @@ public class DatabaseManager {
         return dbResponseToReturn;
     }
 
+    public String signOut(String email, String auth_token) {
+        JSONObject jsonPayload = new JSONObject();
+        try{
+            jsonPayload = new JSONObject();
+            jsonPayload.put("email", email);
+            jsonPayload.put("authentication_token", auth_token);
+        } catch (JSONException e){
+            Log.e("signUp", "Error creating JSONObject: " + e);
+        }
+
+        new DownloadData().execute(SIGN_OUT_URI, jsonPayload.toString(), "signOut", email, auth_token);
+        String dbResponseToReturn = dbResponse.toString();
+        dbResponse.delete(0, dbResponse.length());
+        return dbResponseToReturn;
+    }
+    
     private void updateSession(String outputData, String inputData){
         SessionManager sessionManager = new SessionManager(context);
         JSONObject input = null;

@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String username;
 
+    private DatabaseManager dbm;
+
     private ViewGroup transitionContainer;
     private FrameLayout buddiesLayout;
     private FrameLayout journeysLayout;
@@ -119,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
         Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
 
+        dbm = new DatabaseManager(getApplicationContext());
+        dbm.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -148,30 +152,31 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener navFabsOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TransitionManager.beginDelayedTransition(transitionContainer);
-                visibleLayout.setVisibility(View.GONE);
 
-                switch (view.getId()) {
-                    case R.id.buddies_fab:
-                        actionBar.show();
-                        visibleLayout = buddiesLayout;
-                        setNavButtonColorSelected(buddiesFab);
-                        updateActionBar(R.id.buddies_fab);
-                        break;
-                    case R.id.journeys_fab:
-                        actionBar.show();
-                        visibleLayout = journeysLayout;
-                        setNavButtonColorSelected(journeysFab);
-                        updateActionBar(R.id.journeys_fab);
-                        break;
-                    case R.id.settings_fab:
-                        actionBar.hide();
-                        visibleLayout = settingsLayout;
-                        setNavButtonColorSelected(settingsFab);
+            TransitionManager.beginDelayedTransition(transitionContainer);
+            visibleLayout.setVisibility(View.GONE);
 
-                }
-                visibleLayout.setVisibility(View.VISIBLE);
-                visibleLayout.requestFocus();
+            switch (view.getId()) {
+                case R.id.buddies_fab:
+                    actionBar.show();
+                    visibleLayout = buddiesLayout;
+                    setNavButtonColorSelected(buddiesFab);
+                    updateActionBar(R.id.buddies_fab);
+                    break;
+                case R.id.journeys_fab:
+                    actionBar.show();
+                    visibleLayout = journeysLayout;
+                    setNavButtonColorSelected(journeysFab);
+                    updateActionBar(R.id.journeys_fab);
+                    break;
+                case R.id.settings_fab:
+                    actionBar.hide();
+                    visibleLayout = settingsLayout;
+                    setNavButtonColorSelected(settingsFab);
+                    break;
+            }
+            visibleLayout.setVisibility(View.VISIBLE);
+            visibleLayout.requestFocus();
             }
         };
         buddiesFab.setOnClickListener(navFabsOnClickListener);
@@ -182,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sessionManager.logout();
+
                 actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
