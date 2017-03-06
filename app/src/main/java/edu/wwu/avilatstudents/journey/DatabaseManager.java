@@ -3,6 +3,7 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -47,14 +47,14 @@ public class DatabaseManager {
             Log.e("signUp", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, jsonObjectUser.toString());
+        new DownloadData().execute(url, jsonObjectUser.toString(), "login");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
     }
 
 
-    public String signUp(String url, String username, String email, String password, String passwordConfirmation) throws UnsupportedEncodingException{
+    public String signUp(String url, String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
 
@@ -71,41 +71,44 @@ public class DatabaseManager {
             Log.e("signUp", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, jsonObjectUser.toString(), username, email);
+        new DownloadData().execute(url, jsonObjectUser.toString(), "signUp");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
     }
 
 
-    private void signUpHelper(String data, String username){
+    private void updateSession(String outputData, String inputData){
         SessionManager sessionManager = new SessionManager(context);
         JSONObject input = null;
+        JSONObject output = null;
         try {
-            input = new JSONObject(data).getJSONObject("data");
-            Log.d("signUpHelper", input.toString());
-            sessionManager.createSession(username);
-            Log.d("signUpHelper", username);
+            output = new JSONObject(outputData).getJSONObject("user");
+            input = new JSONObject(inputData).getJSONObject("data");
+            Log.d("signUpHelper", "input: " + input.toString());
+            sessionManager.saveUsername((output.has("username") ? output.getString("username") : input.getString("username")));
+            Log.d("signUpHelper", "Username: " + sessionManager.getUsername());
             sessionManager.saveAuthentication(input.getString("authentication_token"));
+            Log.d("signUpHelper", "Authentication: " + sessionManager.getAuthentication());
+            sessionManager.saveEmail(output.getString("email"));
+            Log.d("signUpHelper", "Email: " + sessionManager.getEmail());
         }catch(JSONException e){
             Log.e("signUpHelper", "Error converting server output to JSON: " + e);
         }
-        //Toast.makeText(context, "Hello " + sessionManager.getUsername() + "!" + "\nYour authentication token is " + sessionManager.getAuthentication(), Toast.LENGTH_LONG).show();
     }
 
-    //PARAMS: (String url, String jsonData, String username, String email)
+
     private class DownloadData extends AsyncTask<String, Void, String> {
-        String data = "";
         HttpURLConnection connection = null;
+        String inputData = "";
 
         @Override
         protected String doInBackground(String... strings) {
 
-            InputStream inputStream = null;
-            String request = "";
-
             try{
                 URL url = new URL(strings[0]);
+                String outputData = strings[1];
+                String method = strings[2];
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setInstanceFollowRedirects(true);
                 connection.setDoOutput(true);
@@ -114,12 +117,13 @@ public class DatabaseManager {
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("User-Agent", "curl/7.47.0");
                 connection.connect();
-                Log.d("signUp", connection.getRequestMethod());
 
-                sendOutput(strings[1]);
+                sendOutput(outputData);
                 receiveInput();
 
-                signUpHelper(data, strings[2]);
+                if((method.equals("signUp")) || (method.equals("login"))) updateSession(outputData, inputData);
+
+
 
             }catch(Exception e){
                 Log.e("signUp", "Error connecting to server: " + e);
@@ -127,12 +131,16 @@ public class DatabaseManager {
                 connection.disconnect();
                 Log.d("signUp", "Connection disconnected");
             }
-            return data;
+            return inputData;
         }
 
         @Override
         protected void onPostExecute(String s) {
             Log.d("signUp", "Input: " + s);
+            SessionManager sessionManager = new SessionManager(context);
+            Toast.makeText(context, "Hello " + sessionManager.getUsername() + "!", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
         }
 
 
@@ -156,14 +164,13 @@ public class DatabaseManager {
             }catch(Exception e){
                 Log.e("signUp", "Error getting input stream: " + e);
             }
-            Log.d("signUp", "hello");
 
             InputStreamReader inputStreamReader = new InputStreamReader(input);
             int inputStreamData;
 
             try {
                 while ((inputStreamData = inputStreamReader.read()) != -1) {
-                    data += (char) inputStreamData;
+                    inputData += (char) inputStreamData;
                     Log.d("signUp", "Still reading from input stream");
                     Log.d("signUp", "inputStreamData: " + inputStreamData);
                 }

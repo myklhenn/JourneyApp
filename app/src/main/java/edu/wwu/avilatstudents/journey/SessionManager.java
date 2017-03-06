@@ -16,6 +16,7 @@ public class SessionManager {
     private static boolean IS_LOGGED_IN;
     private static final String SP_NAME = "JourneySP";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_EMAIL = "email";
     public static final String KEY_AUTHENTICATION = "authentication_token";
 
 
@@ -26,8 +27,14 @@ public class SessionManager {
         editor = sharedPreferences.edit();
     }
 
-    public void createSession(String username){
+    public void saveUsername(String username){
         editor.putString(KEY_USERNAME, username);
+        editor.commit();
+        IS_LOGGED_IN = true;
+    }
+
+    public void saveEmail(String email){
+        editor.putString(KEY_EMAIL, email);
         editor.commit();
         IS_LOGGED_IN = true;
     }
@@ -37,17 +44,13 @@ public class SessionManager {
         editor.commit();
     }
 
-    public String getUsername(){
-        return sharedPreferences.getString(KEY_USERNAME, null);
-    }
+    public String getUsername(){return sharedPreferences.getString(KEY_USERNAME, null);}
 
-    public String getAuthentication(){
-        return sharedPreferences.getString(KEY_AUTHENTICATION, null);
-    }
+    public String getEmail(){return sharedPreferences.getString(KEY_EMAIL, null);}
 
-    public boolean isLoggedIn(){
-        return (sharedPreferences.getString(KEY_USERNAME, null) != null);
-    }
+    public String getAuthentication(){return sharedPreferences.getString(KEY_AUTHENTICATION, null);}
+
+    public boolean isLoggedIn(){return (sharedPreferences.getString(KEY_USERNAME, null) != null);}
 
     public void login(){
         String username = sharedPreferences.getString(KEY_USERNAME, null);
