@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
 
         dbm = new DatabaseManager(getApplicationContext());
-        dbm.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -186,16 +185,18 @@ public class MainActivity extends AppCompatActivity {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sessionManager.logout();
-
-                actionBar.show();
+                dbm.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
+                /*actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
                 updateActionBar(R.id.journeys_fab);
                 visibleLayout.setVisibility(View.GONE);
                 journeysLayout.setVisibility(View.VISIBLE);
                 visibleLayout = journeysLayout;
-                visibleLayout.requestFocus();
+                */
+                Intent gotoLogin = new Intent(MainActivity.this, LoginActivity.class);
+                gotoLogin.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(gotoLogin);
             }
         });
 

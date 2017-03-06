@@ -26,7 +26,7 @@ public class DatabaseManager {
     private StringBuilder dbResponse;
     private static final String API_VERSION = "v1";
 
-    public static final String SIGN_OUT_URI = "http://localhost:3000/api/" + API_VERSION + "/sessions/";
+    public static final String SIGN_OUT_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/sessions/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
@@ -78,21 +78,12 @@ public class DatabaseManager {
     }
 
     public String signOut(String email, String auth_token) {
-        JSONObject jsonPayload = new JSONObject();
-        try{
-            jsonPayload = new JSONObject();
-            jsonPayload.put("email", email);
-            jsonPayload.put("authentication_token", auth_token);
-        } catch (JSONException e){
-            Log.e("signUp", "Error creating JSONObject: " + e);
-        }
-
-        new DownloadData().execute(SIGN_OUT_URI, jsonPayload.toString(), "signOut", email, auth_token);
+        new DownloadData().execute(SIGN_OUT_URI, "", "signOut", email, auth_token, "DELETE");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
     }
-    
+
     private void updateSession(String outputData, String inputData){
         SessionManager sessionManager = new SessionManager(context);
         JSONObject input = null;
@@ -148,6 +139,7 @@ public class DatabaseManager {
                 if(!(method.equals("signUp")) && !(method.equals("login"))){
                     String email = strings[3];
                     String authentication = strings[4];
+                    connection.setRequestMethod(strings[5]);
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
@@ -156,13 +148,16 @@ public class DatabaseManager {
                 sendOutput(outputData);
                 receiveInput();
 
-                if((method.equals("signUp")) || (method.equals("login"))) updateSession(outputData, inputData);
+                if((method.equals("signUp")) || (method.equals("login"))) {
+                    updateSession(outputData, inputData);
+                } else if (method.equals("signOut")) {
+                    SessionManager sm = new SessionManager(context);
+                    sm.logout();
+                }
 
-
-
-            }catch(Exception e){
+            } catch(Exception e){
                 Log.e("database", "Connection fail: " + e);
-            }finally{
+            } finally{
                 if(connection != null) connection.disconnect();
                 Log.d("database", "Connection disconnected");
             }
