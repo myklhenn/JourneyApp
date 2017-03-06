@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/journey_view"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tab_background_selected">
+    android:background="@color/tab_background_selected"
+    android:elevation="5dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="@color/journeyCardBkg"
         android:transitionName="@string/transition_journey_title">
 
         <TextView
+            android:id="@+id/journey_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Journey Title"/>
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:text="Journey Title"
+            android:textAlignment="textStart" />
 
     </RelativeLayout>
-</LinearLayout>
+</FrameLayout>
