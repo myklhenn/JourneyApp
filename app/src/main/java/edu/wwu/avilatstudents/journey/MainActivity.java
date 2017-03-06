@@ -1,5 +1,6 @@
 package edu.wwu.avilatstudents.journey;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.hardware.Sensor;
@@ -53,22 +54,22 @@ public class MainActivity extends AppCompatActivity {
     ExpandableHeightGridView invitedJourneyCards;
 
     BuddiesListItem[] testBuddies = {
-        new BuddiesListItem("Mark"),
-        new BuddiesListItem("Brendan"),
-        new BuddiesListItem("Michael"),
-        new BuddiesListItem("Tyler")
+            new BuddiesListItem("Mark"),
+            new BuddiesListItem("Brendan"),
+            new BuddiesListItem("Michael"),
+            new BuddiesListItem("Tyler")
     };
 
     JourneyListItem[] testActiveJourneys = {
-        new JourneyListItem("Active Journey 1", 20),
-        new JourneyListItem("Active Journey 2", 65),
-        new JourneyListItem("Active Journey 3", 70),
+            new JourneyListItem("Active Journey 1", 20),
+            new JourneyListItem("Active Journey 2", 65),
+            new JourneyListItem("Active Journey 3", 70),
     };
 
     JourneyListItem[] testInvitedJourneys = {
-        new JourneyListItem("Invited Journey 1", 20),
-        new JourneyListItem("Invited Journey 2", 65),
-        new JourneyListItem("Invited Journey 3", 70),
+            new JourneyListItem("Invited Journey 1", 20),
+            new JourneyListItem("Invited Journey 2", 65),
+            new JourneyListItem("Invited Journey 3", 70),
     };
 
     @Override
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         final SessionManager sessionManager = new SessionManager(this);
+        final DatabaseManager databaseManager = new DatabaseManager(this);
         Log.d("login", sessionManager.isLoggedIn() ? "true" : "false");
         if(!sessionManager.isLoggedIn()) {
             sessionManager.login();
@@ -88,12 +90,16 @@ public class MainActivity extends AppCompatActivity {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         SensorEventListener sensorEventListener = new SensorEventListener() {
-            long lastTimeStamp;
+            float stepsLastUpdate = 0;
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if(sensorEvent.values[0] > 0){
-                    //TODO: send sensorEvent.values[0] to database
-                }
+                if((sensorEvent.values[0] - stepsLastUpdate) >= 10){
+                    Log.d("UpdateSteps", "Walked more than 10 steps");
+                    databaseManager.updateSteps("http://murmuring-taiga-37698.herokuapp.com/api/v1/steps/update_steps",
+                            sessionManager.getEmail(),
+                            Float.toString(sensorEvent.values[0]),
+                            sessionManager.getAuthentication());
+                }else {Log.d("UpdateSteps", "Walked less than 10 steps");}
             }
 
             @Override
@@ -137,30 +143,30 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener navFabsOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            TransitionManager.beginDelayedTransition(transitionContainer);
-            visibleLayout.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition(transitionContainer);
+                visibleLayout.setVisibility(View.GONE);
 
-            switch (view.getId()) {
-                case R.id.buddies_fab:
-                    actionBar.show();
-                    visibleLayout = buddiesLayout;
-                    setNavButtonColorSelected(buddiesFab);
-                    updateActionBar(R.id.buddies_fab);
-                    break;
-                case R.id.journeys_fab:
-                    actionBar.show();
-                    visibleLayout = journeysLayout;
-                    setNavButtonColorSelected(journeysFab);
-                    updateActionBar(R.id.journeys_fab);
-                    break;
-                case R.id.settings_fab:
-                    actionBar.hide();
-                    visibleLayout = settingsLayout;
-                    setNavButtonColorSelected(settingsFab);
+                switch (view.getId()) {
+                    case R.id.buddies_fab:
+                        actionBar.show();
+                        visibleLayout = buddiesLayout;
+                        setNavButtonColorSelected(buddiesFab);
+                        updateActionBar(R.id.buddies_fab);
+                        break;
+                    case R.id.journeys_fab:
+                        actionBar.show();
+                        visibleLayout = journeysLayout;
+                        setNavButtonColorSelected(journeysFab);
+                        updateActionBar(R.id.journeys_fab);
+                        break;
+                    case R.id.settings_fab:
+                        actionBar.hide();
+                        visibleLayout = settingsLayout;
+                        setNavButtonColorSelected(settingsFab);
 
-            }
-            visibleLayout.setVisibility(View.VISIBLE);
-            visibleLayout.requestFocus();
+                }
+                visibleLayout.setVisibility(View.VISIBLE);
+                visibleLayout.requestFocus();
             }
         };
         buddiesFab.setOnClickListener(navFabsOnClickListener);
@@ -243,12 +249,12 @@ public class MainActivity extends AppCompatActivity {
         buddiesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
-            //View buddiesView = findViewById(R.id.buddies_layout);
+                BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
+                //View buddiesView = findViewById(R.id.buddies_layout);
 
-            Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
-            showBuddyInfo.putExtra("buddyName", buddy.getName());
-            startActivity(showBuddyInfo);
+                Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
+                showBuddyInfo.putExtra("buddyName", buddy.getName());
+                startActivity(showBuddyInfo);
             }
         });
     }
@@ -258,12 +264,12 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
-            //View journeyView = findViewById(R.id.activity_journey);
+                JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
+                //View journeyView = findViewById(R.id.activity_journey);
 
-            Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
-            showJourney.putExtra("journeyName", journey.getName());
-            startActivity(showJourney);
+                Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
+                showJourney.putExtra("journeyName", journey.getName());
+                startActivity(showJourney);
             }
         };
 
