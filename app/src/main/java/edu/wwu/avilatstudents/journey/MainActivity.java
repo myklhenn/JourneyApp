@@ -1,5 +1,6 @@
 package edu.wwu.avilatstudents.journey;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.hardware.Sensor;
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void prepareBuddiesList() {
+    private void prepareBuddiesList() {
         buddiesList = (ListView) findViewById(R.id.buddies_list);
         BuddiesListItemAdapter bla = new BuddiesListItemAdapter(this, testBuddies);
         buddiesList.setAdapter(bla);
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void prepareJourneysLists() {
+    private void prepareJourneysLists() {
         // prepare listener/handler for transition to JourneyActivity
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(intent, bundle);
 //    }
 
-    public void updateActionBar(int fabId) {
+    private void updateActionBar(int fabId) {
         switch (fabId) {
             case R.id.buddies_fab:
                 // (CHANGE WHAT mainSearch ACTUALLY DOES)
@@ -323,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
         item.setVisible(true);
     }
 
-    public void setNavButtonColorSelected(FloatingActionButton navButton) {
+    private void setNavButtonColorSelected(FloatingActionButton navButton) {
         // reset nav buttons to original color
         buddiesFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
