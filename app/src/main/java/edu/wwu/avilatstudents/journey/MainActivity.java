@@ -4,6 +4,10 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -78,8 +82,29 @@ public class MainActivity extends AppCompatActivity {
         // set the layout for this activity
         setContentView(R.layout.activity_main);
 
-        username = sessionManager.getUsername();
-        Toast.makeText(MainActivity.this, "Hello " + username + "!", Toast.LENGTH_LONG).show();
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        SensorEventListener sensorEventListener = new SensorEventListener() {
+            long lastTimeStamp;
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if(sensorEvent.values[0] > 0){
+                    //TODO: send sensorEvent.values[0] to database
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
+
+        boolean batchSupported = sensorManager.registerListener(sensorEventListener, sensor, 1000000, 10000000);
+
+        Toast.makeText(getApplicationContext(), "Hello " + sessionManager.getUsername() + "!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
+
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));

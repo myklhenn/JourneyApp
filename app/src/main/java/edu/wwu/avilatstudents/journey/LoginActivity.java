@@ -10,8 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.UnsupportedEncodingException;
-
 public class LoginActivity extends AppCompatActivity {
     EditText usernameET, emailET, passwordET, passwordConfirmationET;
     TextView orTV;
@@ -20,8 +18,6 @@ public class LoginActivity extends AppCompatActivity {
     OrStatus orStatus;
     Button loginBtn;
     SessionManager sessionManager;
-    String username;
-    String authentication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +39,25 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    String dbResponse;
+                    String username;
+                    String authentication;
                     DatabaseManager databaseManager = new DatabaseManager(getApplicationContext());
                     String url = (orStatus == OrStatus.OR_SIGN_UP ? "http://murmuring-taiga-37698.herokuapp.com/api/v1/sessions" : "http://murmuring-taiga-37698.herokuapp.com/api/v1/registrations");
-                    databaseManager.signUp(url,
-                            usernameET.getText().toString(),
-                            emailET.getText().toString(),
-                            passwordET.getText().toString(),
-                            passwordConfirmationET.getText().toString());
+                    if(orStatus == OrStatus.OR_SIGN_UP){
+                        dbResponse = databaseManager.login(url,
+                                emailET.getText().toString(),
+                                passwordET.getText().toString());
+                    }else {
+                        dbResponse = databaseManager.signUp(url,
+                                usernameET.getText().toString(),
+                                emailET.getText().toString(),
+                                passwordET.getText().toString(),
+                                passwordConfirmationET.getText().toString());
+
+                    }
                     finish();
-                }catch(UnsupportedEncodingException e){
+                }catch(Exception e){
                     Log.e("loginBtn", "" + e);
                 }
             }
