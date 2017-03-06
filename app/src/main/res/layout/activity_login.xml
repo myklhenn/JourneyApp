@@ -65,18 +65,6 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:inputType="textPersonName"-->
-            <!--android:hint="username"-->
-            <!--android:ems="10"-->
-            <!--android:id="@+id/username"-->
-            <!--android:background="@drawable/edit_text_field"-->
-            <!--android:visibility="gone"/>-->
-
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/email_layout"
                 android:layout_width="match_parent"
@@ -91,17 +79,6 @@
                     android:inputType="textEmailAddress" />
 
             </android.support.design.widget.TextInputLayout>
-
-            <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:inputType="textEmailAddress"-->
-            <!--android:hint="email"-->
-            <!--android:ems="10"-->
-            <!--android:id="@+id/email"-->
-            <!--android:background="@drawable/edit_text_field" />-->
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/password_layout"
@@ -118,17 +95,6 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:inputType="textPassword"-->
-            <!--android:hint="password"-->
-            <!--android:ems="10"-->
-            <!--android:id="@+id/password"-->
-            <!--android:background="@drawable/edit_text_field"/>-->
-
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/password_confirmation_layout"
                 android:layout_width="match_parent"
@@ -144,18 +110,6 @@
                     android:inputType="textPassword" />
 
             </android.support.design.widget.TextInputLayout>
-
-            <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:inputType="textPassword"-->
-            <!--android:hint="password confirmation"-->
-            <!--android:ems="10"-->
-            <!--android:id="@+id/password_confirmation"-->
-            <!--android:background="@drawable/edit_text_field"-->
-            <!--android:visibility="gone"/>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
