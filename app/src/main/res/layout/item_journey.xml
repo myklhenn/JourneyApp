@@ -35,4 +35,5 @@
         android:paddingTop="0dp"
         android:text="Journey Title"
         android:textSize="16sp" />
+
 </LinearLayout>

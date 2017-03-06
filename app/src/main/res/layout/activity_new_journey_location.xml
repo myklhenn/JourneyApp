@@ -29,6 +29,7 @@
         android:typeface="sans"
         android:visibility="visible"
         android:text="CHOOSE WHERE TO BEGIN"/>
+
     <TextView
         android:id="@+id/chooseTwo"
         android:layout_width="match_parent"
@@ -40,6 +41,7 @@
         android:typeface="sans"
         android:visibility="gone"
         android:text="CHOOSE WHERE TO END"/>
+
     <TextView
         android:id="@+id/distance"
         android:layout_width="match_parent"
@@ -53,6 +55,7 @@
         android:typeface="sans"
         android:visibility="gone"
         android:text=""/>
+
     <Button
         android:id="@+id/backbutton"
         android:layout_width="wrap_content"
@@ -78,6 +81,7 @@
         android:shadowColor="@android:color/darker_gray"
         android:textColorHighlight="@android:color/black"
         android:visibility="gone"/>
+
     <Button
         android:id="@+id/finishbutton"
         android:layout_width="match_parent"
@@ -91,4 +95,5 @@
         android:shadowColor="@android:color/darker_gray"
         android:textColorHighlight="@android:color/black"
         android:visibility="gone"/>
+
 </FrameLayout>

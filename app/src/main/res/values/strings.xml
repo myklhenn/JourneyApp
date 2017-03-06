@@ -10,4 +10,6 @@
     <string name="or_sign_up">or sign up</string>
     <string name="or_login">or login</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCDkza_W4I9JpZB1vxPN1V5fNRaoQUIOv4</string>
+    <string name="journey_name_input_label_text">Enter a name for your new journey:</string>
+    <string name="journey_name_input_hint">Journey Name</string>
 </resources>

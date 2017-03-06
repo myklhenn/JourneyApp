@@ -56,10 +56,12 @@
                 android:horizontalSpacing="10dp"
                 android:isScrollContainer="false"
                 android:numColumns="2"
+                android:paddingBottom="80dp"
                 android:scrollbars="none"
                 android:verticalSpacing="10dp" />
 
         </LinearLayout>
+
     </ScrollView>
 
 </FrameLayout>
