@@ -53,7 +53,6 @@ public class DatabaseManager {
         return dbResponseToReturn;
     }
 
-
     public String signUp(String url, String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
@@ -77,7 +76,6 @@ public class DatabaseManager {
         return dbResponseToReturn;
     }
 
-
     private void updateSession(String outputData, String inputData){
         SessionManager sessionManager = new SessionManager(context);
         JSONObject input = null;
@@ -97,6 +95,7 @@ public class DatabaseManager {
         }
     }
 
+    
 
     private class DownloadData extends AsyncTask<String, Void, String> {
         HttpURLConnection connection = null;
