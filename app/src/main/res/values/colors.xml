@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#F2ECCC</color>
     <color name="mainNavBase">#f2eccc</color>
-    <color name="mainNavSelected">#FF6666</color>
+    <color name="mainNavSelected">#ff6666</color>
     <color name="tab_background_selected">#ffffff</color>
     <color name="journeyCardBkg">#dbdbdb</color>
 </resources>

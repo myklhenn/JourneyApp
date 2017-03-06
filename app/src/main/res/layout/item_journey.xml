@@ -6,17 +6,17 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_near_me_black_24dp"
         android:id="@+id/journey_card_map"
         android:layout_width="match_parent"
-        android:paddingTop="40dp"
+        android:layout_height="wrap_content"
+        android:background="@color/journeyCardBkg"
         android:paddingBottom="40dp"
-        android:paddingStart="60dp"
         android:paddingEnd="60dp"
+        android:paddingStart="60dp"
+        android:paddingTop="40dp"
         android:scaleX="1.5"
         android:scaleY="1.5"
-        android:background="@color/journeyCardBkg" />
+        app:srcCompat="@drawable/ic_near_me_black_24dp" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -32,6 +32,7 @@
         android:background="@color/journeyCardBkg"
         android:paddingBottom="5dp"
         android:paddingStart="15dp"
+        android:paddingEnd="15dp"
         android:paddingTop="0dp"
         android:text="Journey Title"
         android:textSize="16sp" />
