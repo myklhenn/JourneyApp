@@ -83,7 +83,7 @@ public class DatabaseManager {
         try {
             output = new JSONObject(outputData).getJSONObject("user");
             input = new JSONObject(inputData).getJSONObject("data");
-            Log.d("signUpHelper", "input: " + input.toString());
+            Log.d("database", "input: " + input.toString());
             sessionManager.saveUsername((output.has("username") ? output.getString("username") : input.getString("username")));
             Log.d("database", "Username: " + sessionManager.getUsername());
             sessionManager.saveAuthentication(input.getString("authentication_token"));
@@ -121,8 +121,6 @@ public class DatabaseManager {
                 URL url = new URL(strings[0]);
                 String outputData = strings[1];
                 String method = strings[2];
-                String email = strings[3];
-                String authentication = strings[4];
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setInstanceFollowRedirects(true);
                 connection.setDoOutput(true);
@@ -131,6 +129,8 @@ public class DatabaseManager {
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("User-Agent", "curl/7.47.0");
                 if(!(method.equals("signUp")) && !(method.equals("login"))){
+                    String email = strings[3];
+                    String authentication = strings[4];
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
@@ -146,7 +146,7 @@ public class DatabaseManager {
             }catch(Exception e){
                 Log.e("database", "Connection fail: " + e);
             }finally{
-                connection.disconnect();
+                if(connection != null) connection.disconnect();
                 Log.d("database", "Connection disconnected");
             }
             return inputData;

@@ -93,13 +93,18 @@ public class MainActivity extends AppCompatActivity {
             float stepsLastUpdate = 0;
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if((sensorEvent.values[0] - stepsLastUpdate) >= 10){
-                    Log.d("UpdateSteps", "Walked more than 10 steps");
+                if(sessionManager.isLoggedIn() && (sensorEvent.values[0] - stepsLastUpdate) >= 10){
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked more than 10 steps");
                     databaseManager.updateSteps("http://murmuring-taiga-37698.herokuapp.com/api/v1/steps/update_steps",
                             sessionManager.getEmail(),
                             Float.toString(sensorEvent.values[0]),
                             sessionManager.getAuthentication());
-                }else {Log.d("UpdateSteps", "Walked less than 10 steps");}
+                    stepsLastUpdate = sensorEvent.values[0];
+                }else {
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked less than 10 steps");
+                }
             }
 
             @Override
