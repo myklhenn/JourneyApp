@@ -15,8 +15,6 @@ import android.widget.TextView;
  * Created by myklhenn on 2/28/17.
  */
 
-
-
 class JourneyListAdapter extends ArrayAdapter<JourneyListItem> {
 
     private final Activity context;

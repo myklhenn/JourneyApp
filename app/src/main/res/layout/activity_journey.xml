@@ -24,4 +24,5 @@
             android:textAlignment="textStart" />
 
     </RelativeLayout>
+
 </FrameLayout>
