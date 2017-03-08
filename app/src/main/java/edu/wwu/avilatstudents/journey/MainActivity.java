@@ -194,10 +194,6 @@ public class MainActivity extends AppCompatActivity {
                 visibleLayout.setVisibility(View.GONE);
                 journeysLayout.setVisibility(View.VISIBLE);
                 visibleLayout = journeysLayout;
-
-                Intent gotoLogin = new Intent(MainActivity.this, LoginActivity.class);
-                gotoLogin.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(gotoLogin);
             }
         });
 
