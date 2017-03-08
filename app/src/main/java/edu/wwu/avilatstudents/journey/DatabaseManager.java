@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by avila_000 on 3/2/2017.
@@ -43,6 +44,7 @@ public class DatabaseManager {
     public String login(String email, String password){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
+        String response = null;
 
         try{
             jsonObjectInfo = new JSONObject();
@@ -55,15 +57,20 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "login");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+        try {
+            response = new DownloadData().execute(SIGN_IN_OR_OUT_URI, "POST", jsonObjectUser.toString(), "login").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     public String signUp(String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
+        String response = null;
 
         try{
             jsonObjectInfo = new JSONObject();
@@ -78,17 +85,19 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "signUp");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+        try {
+            response = new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "signUp").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return response;
     }
 
-    public String signOut(String email, String auth_token) {
-        new DownloadData().execute(SIGN_IN_OR_OUT_URI, "", "signOut", email, auth_token, "DELETE");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+    public void signOut(String email, String auth_token) {
+        new DownloadData().execute(SIGN_IN_OR_OUT_URI, "DELETE", "", "signUp", email, auth_token);
     }
 
     private void updateSession(String outputData, String inputData){
@@ -294,23 +303,29 @@ public class DatabaseManager {
 
         private void receiveInput(){
             InputStream input = null;
+            InputStreamReader inputStreamReader = null;
+            int inputStreamData;
+            boolean error = false;
 
             try {
-                input = connection.getInputStream();
-            }catch(Exception e){
+                if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                    input = connection.getInputStream();
+                } else {
+                    input = connection.getErrorStream();
+                    error = true;
+                }
+                inputStreamReader = new InputStreamReader(input);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(Exception e) {
                 Log.e("database", "Input fail " + e);
             }
-
-            InputStreamReader inputStreamReader = new InputStreamReader(input);
-            int inputStreamData;
 
             try {
                 while ((inputStreamData = inputStreamReader.read()) != -1) {
                     inputData += (char) inputStreamData;
-/*                    Log.d("database", "Still reading from input stream");
-                    Log.d("database", "inputStreamData: " + inputStreamData);*/
                 }
-            }catch(IOException e){
+            } catch(IOException e){
                 Log.e("database", "Input fail: " + e);
             }
             Log.d("database", "Input success");
