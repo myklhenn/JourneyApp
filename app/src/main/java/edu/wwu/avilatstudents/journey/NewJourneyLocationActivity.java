@@ -1,26 +1,15 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
-import android.content.res.ColorStateList;
-import android.provider.ContactsContract;
-import android.support.v4.app.FragmentActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.graphics.Color;
-import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,14 +17,19 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-//import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static edu.wwu.avilatstudents.journey.R.id.map;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.google.maps.android.PolyUtil.decode;
+import static edu.wwu.avilatstudents.journey.R.id.map;
+
+//import com.google.android.gms.maps.model.Polyline;
 
 public class NewJourneyLocationActivity extends FragmentActivity implements OnMapReadyCallback {
     static String stepDistance;
@@ -131,8 +125,9 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
             @Override
             public void onClick(View view) {
                 Bundle bundle = getIntent().getExtras();
-                String id = bundle.getString("journeyID");
+                String id = bundle.getString("journeyId");
                 String journeyName = bundle.getString("journeyTitle");
+                dbm.finalizeTravelers(sessM.getEmail(),sessM.getAuthentication(), id);
                 // put all info into database
                 dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
                         Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
