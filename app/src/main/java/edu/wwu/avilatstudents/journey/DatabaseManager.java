@@ -32,13 +32,15 @@ public class DatabaseManager {
     public static final String UPDATE_JOURNEY_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/update/";
     public static final String ADD_TRAVELER_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/add_traveler/";
     public static final String ADD_STEPS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/steps/update_steps/";
+    public static final String JOURNEY_INFO_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/get_data/";
+    public static final String USER_JOURNEYS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/retrieve_user_journeys/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
 
-    public String login(String url, String email, String password){
+    public String login(String email, String password){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
 
@@ -53,7 +55,7 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "login");
+        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "login");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -148,6 +150,26 @@ public class DatabaseManager {
         return null;
     }
 
+    public JSONObject getJourneyInfo(String email, String authentication, String journeyID){
+        try {
+            String input = new DownloadData().execute(JOURNEY_INFO_URI, "GET", "", "getJourneyInfo", email, authentication, journeyID).get();
+            return new JSONObject(input).getJSONObject("data").getJSONObject("journey");
+        }catch (Exception e){
+        Log.e("database", "Error retrieving journey info " + e);
+        }
+        return null;
+    }
+
+    public JSONObject getJourneys(String email, String authentication){
+        try {
+            String input = new DownloadData().execute(USER_JOURNEYS_URI, "GET", "", "getJourneys", email, authentication).get();
+            return new JSONObject(input).getJSONObject("journeys");
+        }catch (Exception e){
+            Log.e("database", "Error retrieving journey info " + e);
+        }
+        return null;
+    }
+
     public void updateJourney(String email, String authentication, String journeyID,
                               String title, String startLat, String startLong,
                               String endLat, String endLong, String startLoc,
@@ -225,7 +247,7 @@ public class DatabaseManager {
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                if(method.equals("addTravelerToJourney") || method.equals("updateJourney")){
+                if(method.equals("addTravelerToJourney") || method.equals("updateJourney") || method.equals("getJourneyInfo")){
                     String journeyID = strings[6];
                     connection.setRequestProperty("X-Journey-Id", journeyID);
                 }
