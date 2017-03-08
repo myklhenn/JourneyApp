@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("database", "Walked more than 10 steps");
                     databaseManager.updateSteps(
                             sessionManager.getEmail(),
-                            Float.toString(sensorEvent.values[0]),
-                            sessionManager.getAuthentication());
+                            sessionManager.getAuthentication(),
+                            Float.toString(sensorEvent.values[0]));
                     stepsLastUpdate = sensorEvent.values[0];
                 }else {
                     Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");

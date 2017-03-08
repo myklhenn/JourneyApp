@@ -130,7 +130,7 @@ public class DatabaseManager {
         }
 
         Log.d("database", "JSON: " + jsonObjectInfo.toString() + "\tEmail: " + email + "\tSteps: " + steps + "\tAuth: " + authentication);
-        new DownloadData().execute(ADD_STEPS_URI, "PATCH", jsonObjectInfo.toString(), "updateSteps", email, authentication);
+        new DownloadData().execute(ADD_STEPS_URI, "POST", jsonObjectInfo.toString(), "updateSteps", email, authentication);
     }
 
     public String createJourney(String email, String authentication, String journeyTitle){
