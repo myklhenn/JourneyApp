@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String username;
 
-    private DatabaseManager dbm;
-
     private ViewGroup transitionContainer;
     private FrameLayout buddiesLayout;
     private FrameLayout journeysLayout;
@@ -121,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
         Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
 
-        dbm = new DatabaseManager(getApplicationContext());
-
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
         actionBar = getSupportActionBar();
@@ -186,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sessionManager.logout();
-                dbm.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
+                databaseManager.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
                 actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
