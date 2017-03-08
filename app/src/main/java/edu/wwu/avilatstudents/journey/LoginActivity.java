@@ -16,8 +16,7 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout usernameTIL, passwordConfirmationTIL;
     TextView orTV;
     ViewGroup editContainer;
-    enum OrStatus {OR_SIGN_UP, OR_LOGIN}
-
+    enum OrStatus {OR_SIGN_UP, OR_LOGIN};
     OrStatus orStatus;
     Button loginBtn;
     SessionManager sessionManager;
@@ -50,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                     DatabaseManager databaseManager = new DatabaseManager(getApplicationContext());
                     String url = (orStatus == OrStatus.OR_SIGN_UP ? "http://murmuring-taiga-37698.herokuapp.com/api/v1/sessions" : "http://murmuring-taiga-37698.herokuapp.com/api/v1/registrations");
                     if(orStatus == OrStatus.OR_SIGN_UP){
-                        dbResponse = databaseManager.login(url,
+                        dbResponse = databaseManager.login(
                                 emailET.getText().toString(),
                                 passwordET.getText().toString());
                     }else {

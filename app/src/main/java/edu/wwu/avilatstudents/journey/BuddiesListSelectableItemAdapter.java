@@ -32,7 +32,6 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
     @NonNull
     @Override
     public View getView(final int pos, View view, @NonNull ViewGroup parent) {
-        //LayoutInflater inflater = context.getLayoutInflater();
         BuddiesListSelectableItemViewHolder buddyItem;
 
         if (view == null) {
@@ -56,11 +55,11 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
         if (this.buddies.get(pos).isSelected()) {
             buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_done_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
-                    this.getContext(), R.color.itemBkgTransparent));
+                    this.getContext(), R.color.itemBkgTransparentSelected));
         } else {
-            buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_close_black_24dp);
+            buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_add_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
-                    this.getContext(), android.R.color.white));
+                    this.getContext(), R.color.itemBkgTransparent));
         }
         
         return view;

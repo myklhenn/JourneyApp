@@ -3,7 +3,8 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
+import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,6 +17,7 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
     SearchView searchBuddies;
     ListView buddiesList;
     Button nextStepBtn;
+    ProgressBar journeyCreationProgress;
 
     ArrayList<BuddiesListSelectableItem> testBuddies = new ArrayList<>();
 
@@ -26,6 +28,13 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
 
         searchBuddies = (SearchView) findViewById(R.id.search_buddies);
         nextStepBtn = (Button) findViewById(R.id.journey_buddies_next_btn);
+        prepareBuddiesList();
+        // animate progress bar from 25 to 50 percent
+        journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
+        ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 25, 50);
+        anim.setDuration(1000);
+        journeyCreationProgress.startAnimation(anim);
+
         nextStepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,6 +49,8 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        journeyCreationProgress.setProgress(50);
     }
 
     private void prepareBuddiesList() {

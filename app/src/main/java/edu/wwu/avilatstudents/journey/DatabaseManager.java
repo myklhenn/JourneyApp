@@ -8,7 +8,6 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +16,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 /**
  * Created by avila_000 on 3/2/2017.
@@ -35,13 +32,15 @@ public class DatabaseManager {
     public static final String UPDATE_JOURNEY_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/update/";
     public static final String ADD_TRAVELER_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/add_traveler/";
     public static final String ADD_STEPS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/steps/update_steps/";
+    public static final String JOURNEY_INFO_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/get_data/";
+    public static final String USER_JOURNEYS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/retrieve_user_journeys/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
 
-    public String login(String url, String email, String password){
+    public String login(String email, String password){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
 
@@ -56,7 +55,7 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "login");
+        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "login");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -66,7 +65,7 @@ public class DatabaseManager {
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
 
-        try {
+        try{
             jsonObjectInfo = new JSONObject();
             jsonObjectInfo.put("username", username);
             jsonObjectInfo.put("email", email);
@@ -75,7 +74,7 @@ public class DatabaseManager {
 
             jsonObjectUser = new JSONObject();
             jsonObjectUser.put("user", jsonObjectInfo);
-        } catch (JSONException e){
+        }catch (JSONException e){
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
@@ -122,7 +121,7 @@ public class DatabaseManager {
         }
 
         Log.d("database", "JSON: " + jsonObjectInfo.toString() + "\tEmail: " + email + "\tSteps: " + steps + "\tAuth: " + authentication);
-        new DownloadData().execute(ADD_STEPS_URI, "POST", jsonObjectInfo.toString(), "updateSteps", email, authentication);
+        new DownloadData().execute(ADD_STEPS_URI, "PATCH", jsonObjectInfo.toString(), "updateSteps", email, authentication);
     }
 
     public String createJourney(String email, String authentication, String journeyTitle){
@@ -141,13 +140,32 @@ public class DatabaseManager {
         }
 
         try {
-            Log.d("database", "createJourney is calling DownloadData.execute");
             String input = new DownloadData().execute(CREATE_JOURNEY_URI, "POST", jsonObjectJourney.toString(), "createJourney", email, authentication).get();
             jsonObjectInput = new JSONObject(input).getJSONObject("data").getJSONObject("journey");
             return jsonObjectInput.getString("id");
 
         }catch(Exception e){
             Log.e("database", "Error with DownloadData().execute: " + e);
+        }
+        return null;
+    }
+
+    public JSONObject getJourneyInfo(String email, String authentication, String journeyID){
+        try {
+            String input = new DownloadData().execute(JOURNEY_INFO_URI, "GET", "", "getJourneyInfo", email, authentication, journeyID).get();
+            return new JSONObject(input).getJSONObject("data").getJSONObject("journey");
+        }catch (Exception e){
+            Log.e("database", "Error retrieving journey info " + e);
+        }
+        return null;
+    }
+
+    public JSONObject getJourneys(String email, String authentication){
+        try {
+            String input = new DownloadData().execute(USER_JOURNEYS_URI, "GET", "", "getJourneys", email, authentication).get();
+            return new JSONObject(input).getJSONObject("journeys");
+        }catch (Exception e){
+            Log.e("database", "Error retrieving journey info " + e);
         }
         return null;
     }
@@ -181,7 +199,6 @@ public class DatabaseManager {
             jsonObjectJourney = new JSONObject();
             jsonObjectJourney.put("journey", jsonObjectInfo);
 
-            Log.d("database", "updateJourney is calling DownloadData.execute");
             new DownloadData().execute(UPDATE_JOURNEY_URI, "PATCH", jsonObjectJourney.toString(), "updateJourney", email, authentication, journeyID);
         }catch(Exception e){
             Log.e("database", "Error with DownloadData().execute: " + e);
@@ -217,7 +234,6 @@ public class DatabaseManager {
                 String outputData = strings[2];
                 String method = strings[3];
                 connection = (HttpURLConnection) url.openConnection();
-                Log.d("database", "Response code: " + connection.getResponseCode());
                 connection.setInstanceFollowRedirects(true);
                 connection.setDoOutput(true);
                 connection.setRequestMethod(requestMethod);
@@ -231,13 +247,12 @@ public class DatabaseManager {
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                if(method.equals("addTravelerToJourney") || method.equals("updateJourney")){
+                if(method.equals("addTravelerToJourney") || method.equals("updateJourney") || method.equals("getJourneyInfo")){
                     String journeyID = strings[6];
                     connection.setRequestProperty("X-Journey-Id", journeyID);
                 }
 
                 connection.connect();
-                Log.d("database", "Response code: " + connection.getResponseCode());
                 sendOutput(outputData);
                 receiveInput();
 

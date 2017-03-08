@@ -1,15 +1,24 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInstaller;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.text.GetChars;
+import android.content.res.ColorStateList;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.List;
 
@@ -20,6 +29,7 @@ import org.json.JSONObject;
 import android.graphics.Color;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -44,30 +54,51 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
     ViewGroup transition_start;
     DatabaseManager dbm;
     SessionManager sessM;
+    ProgressBar journeyCreationProgress;
+    AppCompatButton backBtn;
+    AppCompatButton pathBtn;
+    AppCompatButton finishBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_journey_location);
-        transition_start = (ViewGroup) findViewById(R.id.frameLayoutFragment);
+        transition_start = (ViewGroup) findViewById(R.id.relativeLayoutFragment);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
         dbm = new DatabaseManager(getApplicationContext());
         sessM = new SessionManager(getApplicationContext());
+        // animate progress bar from 50 to 75 percent
+        journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
+        ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 50, 75);
+        anim.setDuration(1000);
+        journeyCreationProgress.startAnimation(anim);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        /*
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        try {
+            Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            double currentLat = myLocation.getLatitude();
+            double currentLng = myLocation.getLongitude();
+            LatLng userPosition = new LatLng(currentLat,currentLng);
+            float zoomLevel = 16.0f; //This goes up to 21
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userPosition, zoomLevel));
+        } catch (SecurityException e) {
+        }*/
         ArrayList<LatLng> start_end_markers = new ArrayList<>();
         SetMarkers(start_end_markers);
     }
     public void SetMarkers(final ArrayList<LatLng> start_end_markers) {
         final TextView beginningJ = (TextView) findViewById(R.id.chooseOne);
         final TextView endingJ = (TextView) findViewById(R.id.chooseTwo);
-        final Button backBtn = (Button) findViewById(R.id.backbutton);
-        final Button pathBtn = (Button) findViewById(R.id.pathbutton);
-        final Button finishBtn = (Button) findViewById(R.id.finishbutton);
+        backBtn = (AppCompatButton) findViewById(R.id.backbutton);
+        pathBtn = (AppCompatButton) findViewById(R.id.pathbutton);
+        finishBtn = (AppCompatButton) findViewById(R.id.finishbutton);
         final TextView pathDistance = (TextView) findViewById(R.id.distance);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +118,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     pathBtn.setVisibility(View.GONE);
                     mMap.addMarker(new MarkerOptions()
                             .position(start_end_markers.get(0))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.begin_point_official))
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_place_blue))
                             .title("Start of your journey")
                     );
                 }
@@ -101,17 +132,18 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     finishBtn.setVisibility(View.VISIBLE);
                     mMap.addMarker(new MarkerOptions()
                             .position(start_end_markers.get(0))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.begin_point_official))
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_place_blue))
                             .title("Start of your journey")
                     );
                     mMap.addMarker(new MarkerOptions()
                             .position(start_end_markers.get(1))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_point_official))
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_place_red))
                             .title("End of your journey")
                     );
                     String jsonString = CreateUrl(start_end_markers.get(0).longitude, start_end_markers.get(0).latitude, start_end_markers.get(1).longitude, start_end_markers.get(1).latitude);
                     new SynchronizeTasks(jsonString).execute();
                 }
+                pathBtn.setText("Next Route");
             }
         });
         finishBtn.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +155,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 // put all info into database
                 dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
                         Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
+
                 finish();
             }
         });
@@ -134,7 +167,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     start_end_markers.add(point);
                     mMap.addMarker(new MarkerOptions()
                             .position(point)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.begin_point_official))
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_place_blue))
                             .title("Start of your journey")
                     );
                     backBtn.setVisibility(View.VISIBLE);
@@ -144,11 +177,12 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     start_end_markers.add(point);
                     mMap.addMarker(new MarkerOptions()
                             .position(point)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.end_point_official))
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_place_red))
                             .title("End of your journey")
                     );
                     endingJ.setVisibility(View.GONE);
                     backBtn.setVisibility(View.VISIBLE);
+                    pathBtn.setText("Find Route");
                     pathBtn.setVisibility(View.VISIBLE);
                 }
             }
@@ -233,9 +267,11 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 stepDistance = Integer.toString(totalSteps);
                 startLocation = "" + ((JSONObject) routeLegs.get(0)).get("start_address");
                 endLocation = "" + ((JSONObject) routeLegs.get(0)).get("end_address");
+                distance = "Your journey's distance: " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
                 pathDistance.setText(distance);
                 pathDistance.setVisibility(View.VISIBLE);
-                PolylineOptions options = new PolylineOptions().width(12).color(Color.rgb(255, 102, 178)).geodesic(true);
+                PolylineOptions options = new PolylineOptions().width(12).color(ContextCompat.getColor(
+                        NewJourneyLocationActivity.this, R.color.journeyAccent)).geodesic(true);
 
                 routeSteps = ((JSONObject) routeLegs.get(0)).getJSONArray("steps");
                 for (int k = 0; k < routeSteps.length(); k++) {

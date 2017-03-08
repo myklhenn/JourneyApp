@@ -1,98 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/frameLayoutFragment"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.wwu.avilatstudents.journey.NewJourneyLocationActivity"
+    android:id="@+id/relativeLayoutFragment"
     android:layout_width="match_parent"
     android:layout_height="fill_parent">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <ProgressBar
+        android:id="@+id/journey_creation_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:animationResolution="@android:integer/config_shortAnimTime"
+        android:maxHeight="5dp"
+        android:minHeight="5dp"
+        android:progress="50"
+        android:progressDrawable="@drawable/progressbar_color_accent" />
+
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
         map:uiRotateGestures="true"
         map:uiScrollGestures="true"
         map:uiTiltGestures="true"
         map:uiZoomControls="true"
-        map:uiZoomGestures="true"/>
+        map:uiZoomGestures="true" />
 
     <TextView
         android:id="@+id/chooseOne"
         android:layout_width="match_parent"
-        android:layout_height="150px"
-        android:textColor="#0020C2"
-        android:gravity="center_horizontal"
-        android:textSize="20dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/map"
+        android:background="@color/actionBarBkg"
+        android:elevation="2dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:text="Choose where to BEGIN your journey:"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:typeface="sans"
-        android:visibility="visible"
-        android:text="CHOOSE WHERE TO BEGIN"/>
+        android:visibility="visible" />
 
     <TextView
         android:id="@+id/chooseTwo"
         android:layout_width="match_parent"
-        android:layout_height="150px"
-        android:gravity="center_horizontal"
-        android:textColor="#E41B17"
-        android:textSize="20dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/map"
+        android:background="@color/actionBarBkg"
+        android:elevation="2dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:text="Choose where to END your journey:"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:typeface="sans"
-        android:visibility="gone"
-        android:text="CHOOSE WHERE TO END"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/distance"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:layout_marginTop="150px"
-        android:gravity="center_horizontal"
-        android:textColor="#040404"
-        android:textSize="20dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/map"
+        android:background="@color/actionBarBkg"
+        android:elevation="2dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:typeface="sans"
-        android:visibility="gone"
-        android:text=""/>
+        android:visibility="gone" />
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/backbutton"
         android:layout_width="wrap_content"
-        android:layout_height="150px"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:text="UNDO"
-        android:background="@android:color/holo_blue_dark"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="45dp"
+        android:layout_marginStart="30dp"
+        android:backgroundTint="@color/journeyAccent"
+        android:elevation="2dp"
+        android:minHeight="55dp"
+        android:minWidth="80dp"
+        android:text="Undo"
         android:textColor="@android:color/white"
-        android:shadowColor="@android:color/darker_gray"
-        android:textColorHighlight="@android:color/black"
-        android:visibility="gone"/>
-    <Button
+        android:visibility="gone" />
+
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/pathbutton"
         android:layout_width="wrap_content"
-        android:layout_height="150px"
-        android:layout_gravity="bottom"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="45dp"
+        android:backgroundTint="@color/journeyAccent"
+        android:elevation="2dp"
         android:gravity="center"
-        android:layout_marginLeft="240px"
-        android:text="GENERATE ROUTE"
-        android:background="@android:color/holo_blue_light"
+        android:minHeight="55dp"
+        android:minWidth="110dp"
+        android:text="Find Route"
         android:textColor="@android:color/white"
-        android:shadowColor="@android:color/darker_gray"
-        android:textColorHighlight="@android:color/black"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/finishbutton"
-        android:layout_width="match_parent"
-        android:layout_height="150px"
-        android:layout_alignTop="@id/map"
-        android:layout_gravity="top|center_horizontal"
-        android:gravity="center"
-        android:text="BEGIN JOURNEY"
-        android:background="@android:color/holo_orange_dark"
-        android:textColor="@android:color/white"
-        android:shadowColor="@android:color/darker_gray"
-        android:textColorHighlight="@android:color/black"
-        android:visibility="gone"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/mainNavBase"
+        android:elevation="2dp"
+        android:minHeight="60dp"
+        android:minWidth="160dp"
+        android:text="Start Journey"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
-</FrameLayout>
+</RelativeLayout>
