@@ -1,5 +1,6 @@
 package edu.wwu.avilatstudents.journey;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.hardware.Sensor;
@@ -25,6 +26,8 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,17 +62,12 @@ public class MainActivity extends AppCompatActivity {
         new BuddiesListItem("Tyler")
     };
 
-    JourneyListItem[] testActiveJourneys = {
-        new JourneyListItem("Active Journey 1", 20),
-        new JourneyListItem("Active Journey 2", 65),
-        new JourneyListItem("Active Journey 3", 70),
-    };
+    ArrayList<JourneyListItem> testActiveJourneys = new ArrayList<>();
+        //new JourneyListItem("Active Journey 1", 20),
+        //new JourneyListItem("Active Journey 2", 65),
+        //new JourneyListItem("Active Journey 3", 70),
 
-    JourneyListItem[] testInvitedJourneys = {
-        new JourneyListItem("Invited Journey 1", 20),
-        new JourneyListItem("Invited Journey 2", 65),
-        new JourneyListItem("Invited Journey 3", 70),
-    };
+    ArrayList<JourneyListItem> testInvitedJourneys = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             sessionManager.login();
             Log.d("login", "Logging in");
         }
-
         // set the layout for this activity
         setContentView(R.layout.activity_main);
 
@@ -192,6 +189,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+            JourneyListItem jLI = new JourneyListItem("test", 10);
+            testActiveJourneys.add(jLI);
 
         mainSearch.clearFocus();
     }
@@ -269,14 +268,14 @@ public class MainActivity extends AppCompatActivity {
 
         // bind data to active journeys view
         activeJourneyCards = (ExpandableHeightGridView) findViewById(R.id.active_journey_cards);
-        JourneyListAdapter jla1 = new JourneyListAdapter(this, testActiveJourneys);
+        JourneyListItemAdapter jla1 = new JourneyListItemAdapter(this, testActiveJourneys);
         activeJourneyCards.setAdapter(jla1);
         activeJourneyCards.setExpanded(true);
         activeJourneyCards.setOnItemClickListener(listener);
 
         // bind data to active journeys view
         invitedJourneyCards = (ExpandableHeightGridView) findViewById(R.id.invited_journey_cards);
-        JourneyListAdapter jla2 = new JourneyListAdapter(this, testInvitedJourneys);
+        JourneyListItemAdapter jla2 = new JourneyListItemAdapter(this, testInvitedJourneys);
         invitedJourneyCards.setAdapter(jla2);
         invitedJourneyCards.setExpanded(true);
         invitedJourneyCards.setOnItemClickListener(listener);

@@ -25,12 +25,10 @@ public class DatabaseManager {
     Context context;
     private StringBuilder dbResponse;
 
-
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
-
 
     public String login(String url, String email, String password){
         JSONObject jsonObjectUser = null;
@@ -53,7 +51,6 @@ public class DatabaseManager {
         return dbResponseToReturn;
     }
 
-
     public String signUp(String url, String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
@@ -67,7 +64,7 @@ public class DatabaseManager {
 
             jsonObjectUser = new JSONObject();
             jsonObjectUser.put("user", jsonObjectInfo);
-        }catch (JSONException e){
+        }catch (JSONException e) {
             Log.e("signUp", "Error creating JSONObject: " + e);
         }
 
@@ -76,7 +73,6 @@ public class DatabaseManager {
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
     }
-
 
     private void updateSession(String outputData, String inputData){
         SessionManager sessionManager = new SessionManager(context);
@@ -96,7 +92,6 @@ public class DatabaseManager {
             Log.e("signUpHelper", "Error converting server output to JSON: " + e);
         }
     }
-
 
     private class DownloadData extends AsyncTask<String, Void, String> {
         HttpURLConnection connection = null;

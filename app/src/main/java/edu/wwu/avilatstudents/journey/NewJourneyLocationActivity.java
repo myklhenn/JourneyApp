@@ -1,8 +1,10 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -100,17 +102,19 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                             .title("End of your journey")
                     );
                     String jsonString = CreateUrl(start_end_markers.get(0).longitude, start_end_markers.get(0).latitude, start_end_markers.get(1).longitude, start_end_markers.get(1).latitude);
-                    new synchronizeTasks(jsonString).execute();
+                    new SynchronizeTasks(jsonString).execute();
                 }
             }
         });
-        /*
         finishBtn.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-             }
+            @Override
+            public void onClick(View view) {
+                // put all info into database
+
+                finish();
+            }
         });
-        */
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
@@ -155,10 +159,10 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         return jsonString.toString();
     }
 
-    private class synchronizeTasks extends AsyncTask<Void, Void, String> {
+    private class SynchronizeTasks extends AsyncTask<Void, Void, String> {
         private ProgressDialog progressDialog;
         String url;
-        synchronizeTasks(String urlPass){
+        SynchronizeTasks(String urlPass){
             url = urlPass;
         }
         @Override
@@ -185,28 +189,6 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         }
     }
 
-    /*
-    private class synchronizeDrawing extends AsyncTask<Void, Void, List<LatLng>> {
-        synchronizeDrawing(String urlPass){
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-
-        }
-        @Override
-        protected List<LatLng> doInBackground(Void... params) {
-            List<LatLng> polyList =
-            return polyList;
-        }
-        @Override
-        protected void onPostExecute(List<LatLng> result) {
-
-        }
-    }
-    */
-
     private void drawPath(String result) {
 
         JSONArray routeArray;
@@ -216,10 +198,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         String distance;
         final TextView pathDistance = (TextView) findViewById(R.id.distance);
         try {
-
-            /*
-             route data in json objects/arrays
-             */
+            // route data in json objects/arrays
             final JSONObject json = new JSONObject(result);
             routeArray = json.getJSONArray("routes");
             int allRoutes = routeArray.length();
@@ -232,14 +211,12 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 if (nextPath == allRoutes) {
                     nextPath = 0;
                 }
-                System.out.println(nextPath);
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Path Distance is " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
                 pathDistance.setText(distance);
                 pathDistance.setVisibility(View.VISIBLE);
                 PolylineOptions options = new PolylineOptions().width(12).color(Color.rgb(255, 102, 178)).geodesic(true);
 
-                // shit performance right now
                 routeSteps = ((JSONObject) routeLegs.get(0)).getJSONArray("steps");
                 for (int k = 0; k < routeSteps.length(); k++) {
                     String polyline = (String) ((JSONObject) ((JSONObject) routeSteps.get(k)).get("polyline")).get("points");
@@ -260,17 +237,4 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
             e.printStackTrace();
         }
     }
-    /*
-    private void SendJSONDatabase(double start_lat, double start_lng, double end_lat, double end_lng)
-    {
-        String token_authentication = "";
-        String title = "";
-        double start_latitude = 0.0;
-        double start_longitude = 0.0;
-        double end_latitude = 0.0;
-        double end_longitude = 0.0;
-        String start_location = "";
-        String end_location = "";
-    }
-    */
 }
