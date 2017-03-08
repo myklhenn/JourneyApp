@@ -11,16 +11,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Created by myklhenn on 2/28/17.
  */
 
-class JourneyListAdapter extends ArrayAdapter<JourneyListItem> {
+class JourneyListItemAdapter extends ArrayAdapter<JourneyListItem> {
 
     private final Activity context;
-    private final JourneyListItem[] journeys;
+    private final ArrayList<JourneyListItem> journeys;
 
-    JourneyListAdapter(Activity context, JourneyListItem[] journeys) {
+    JourneyListItemAdapter(Activity context, ArrayList<JourneyListItem> journeys) {
         super(context, R.layout.item_journey, journeys);
         this.context = context;
         this.journeys = journeys;
@@ -47,16 +49,16 @@ class JourneyListAdapter extends ArrayAdapter<JourneyListItem> {
             journeyCard = (JourneyListItemViewHolder) view.getTag();
         }
 
-        journeyCard.journeyName.setText(this.journeys[pos].getName());
-        journeyCard.journeyProgress.setProgress(this.journeys[pos].getProgress());
-        journeyCard.journeyMap.setImageResource(this.journeys[pos].getMapRes());
+        journeyCard.journeyName.setText(this.journeys.get(pos).getName());
+        journeyCard.journeyProgress.setProgress(this.journeys.get(pos).getProgress());
+        journeyCard.journeyMap.setImageResource(this.journeys.get(pos).getMapRes());
 
         return view;
     }
 
     @Override
     public JourneyListItem getItem(int pos) {
-        return this.journeys[pos];
+        return this.journeys.get(pos);
     }
 }
 

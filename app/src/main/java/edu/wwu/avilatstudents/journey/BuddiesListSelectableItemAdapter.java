@@ -54,7 +54,7 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
         if (this.buddies[pos].isSelected()) {
             buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_done_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
-                    this.getContext(), R.color.journeyCardBkg));
+                    this.getContext(), R.color.itemBkgTransparent));
         } else {
             buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_close_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
