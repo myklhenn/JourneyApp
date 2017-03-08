@@ -185,15 +185,16 @@ public class MainActivity extends AppCompatActivity {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sessionManager.logout();
                 dbm.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
-                /*actionBar.show();
+                actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
                 updateActionBar(R.id.journeys_fab);
                 visibleLayout.setVisibility(View.GONE);
                 journeysLayout.setVisibility(View.VISIBLE);
                 visibleLayout = journeysLayout;
-                */
+
                 Intent gotoLogin = new Intent(MainActivity.this, LoginActivity.class);
                 gotoLogin.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(gotoLogin);

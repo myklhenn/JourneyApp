@@ -150,9 +150,6 @@ public class DatabaseManager {
 
                 if((method.equals("signUp")) || (method.equals("login"))) {
                     updateSession(outputData, inputData);
-                } else if (method.equals("signOut")) {
-                    SessionManager sm = new SessionManager(context);
-                    sm.logout();
                 }
 
             } catch(Exception e){
