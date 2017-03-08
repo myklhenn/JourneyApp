@@ -1,25 +1,15 @@
 package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
-import android.content.res.ColorStateList;
-import android.support.v4.app.FragmentActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.graphics.Color;
-import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,16 +17,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-//import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static edu.wwu.avilatstudents.journey.R.id.map;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.google.maps.android.PolyUtil.decode;
+import static edu.wwu.avilatstudents.journey.R.id.map;
+
+//import com.google.android.gms.maps.model.Polyline;
 
 public class NewJourneyLocationActivity extends FragmentActivity implements OnMapReadyCallback {
+    static String stepDistance;
+    static String startLocation;
+    static String endLocation;
     private static int nextPath = 0;
     private GoogleMap mMap;
     ViewGroup transition_start;
@@ -44,6 +42,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
     AppCompatButton backBtn;
     AppCompatButton pathBtn;
     AppCompatButton finishBtn;
+    DatabaseManager dbm;
+    SessionManager sessM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        dbm = new DatabaseManager(getApplicationContext());
+        sessM = new SessionManager(getApplicationContext());
         // animate progress bar from 50 to 75 percent
         journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
         ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 50, 75);
@@ -117,6 +119,20 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     new synchronizeTasks(jsonString).execute();
                 }
                 pathBtn.setText("Next Route");
+            }
+        });
+        finishBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = getIntent().getExtras();
+                String id = bundle.getString("journeyId");
+                String journeyName = bundle.getString("journeyTitle");
+                dbm.finalizeTravelers(sessM.getEmail(),sessM.getAuthentication(), id);
+                // put all info into database
+                dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
+                        Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
+
+                finish();
             }
         });
 
@@ -220,6 +236,12 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 System.out.println(nextPath);
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Your journey's distance: " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String miles = "" + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String[] splitForSteps = miles.split("\\s+");
+                int totalSteps = Integer.valueOf(splitForSteps[0]) * 2000;
+                stepDistance = Integer.toString(totalSteps);
+                startLocation = "" + ((JSONObject) routeLegs.get(0)).get("start_address");
+                endLocation = "" + ((JSONObject) routeLegs.get(0)).get("end_address");
                 pathDistance.setText(distance);
                 pathDistance.setVisibility(View.VISIBLE);
                 PolylineOptions options = new PolylineOptions().width(12).color(ContextCompat.getColor(

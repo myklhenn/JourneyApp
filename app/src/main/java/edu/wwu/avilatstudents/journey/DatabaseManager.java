@@ -3,7 +3,6 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +34,7 @@ public class DatabaseManager {
     public static final String ADD_STEPS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/steps/update_steps/";
     public static final String JOURNEY_INFO_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/get_data/";
     public static final String USER_JOURNEYS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/retrieve_user_journeys/";
+    public static final String FINALIZE_TRAVELERS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/finalize_travelers";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
@@ -179,6 +179,10 @@ public class DatabaseManager {
         return null;
     }
 
+    public void finalizeTravelers(String email, String authentication, String journeyID){
+            new DownloadData().execute(FINALIZE_TRAVELERS_URI, "PATCH", "", "finalizeTravelers", email, authentication, journeyID);
+    }
+
     public void updateJourney(String email, String authentication, String journeyID,
                               String title, String startLat, String startLong,
                               String endLat, String endLong, String startLoc,
@@ -256,7 +260,7 @@ public class DatabaseManager {
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                if(method.equals("addTravelerToJourney") || method.equals("updateJourney") || method.equals("getJourneyInfo")){
+                if(method.equals("addTravelerToJourney") || method.equals("updateJourney") || method.equals("getJourneyInfo") || method.equals("finalizeTravelers")){
                     String journeyID = strings[6];
                     connection.setRequestProperty("X-Journey-Id", journeyID);
                 }

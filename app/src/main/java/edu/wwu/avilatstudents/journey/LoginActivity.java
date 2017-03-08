@@ -19,7 +19,8 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout usernameTIL, passwordConfirmationTIL;
     TextView orTV, loginErrorTV;
     ViewGroup editContainer;
-    enum OrStatus {OR_SIGN_UP, OR_LOGIN};
+    enum OrStatus {OR_SIGN_UP, OR_LOGIN}
+
     OrStatus orStatus;
     Button loginBtn;
     SessionManager sessionManager;
