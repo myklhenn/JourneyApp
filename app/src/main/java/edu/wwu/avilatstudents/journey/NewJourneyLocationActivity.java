@@ -2,6 +2,7 @@ package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
 import android.content.res.ColorStateList;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +38,9 @@ import static edu.wwu.avilatstudents.journey.R.id.map;
 import static com.google.maps.android.PolyUtil.decode;
 
 public class NewJourneyLocationActivity extends FragmentActivity implements OnMapReadyCallback {
+    static String stepDistance;
+    static String startLocation;
+    static String endLocation;
     private static int nextPath = 0;
     private GoogleMap mMap;
     ViewGroup transition_start;
@@ -44,6 +48,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
     AppCompatButton backBtn;
     AppCompatButton pathBtn;
     AppCompatButton finishBtn;
+    DatabaseManager dbm;
+    SessionManager sessM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        dbm = new DatabaseManager(getApplicationContext());
+        sessM = new SessionManager(getApplicationContext());
         // animate progress bar from 50 to 75 percent
         journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
         ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 50, 75);
@@ -117,6 +125,19 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     new synchronizeTasks(jsonString).execute();
                 }
                 pathBtn.setText("Next Route");
+            }
+        });
+        finishBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = getIntent().getExtras();
+                String id = bundle.getString("journeyID");
+                String journeyName = bundle.getString("journeyTitle");
+                // put all info into database
+                dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
+                        Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
+
+                finish();
             }
         });
 
@@ -220,6 +241,12 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 System.out.println(nextPath);
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Your journey's distance: " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String miles = "" + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String[] splitForSteps = miles.split("\\s+");
+                int totalSteps = Integer.valueOf(splitForSteps[0]) * 2000;
+                stepDistance = Integer.toString(totalSteps);
+                startLocation = "" + ((JSONObject) routeLegs.get(0)).get("start_address");
+                endLocation = "" + ((JSONObject) routeLegs.get(0)).get("end_address");
                 pathDistance.setText(distance);
                 pathDistance.setVisibility(View.VISIBLE);
                 PolylineOptions options = new PolylineOptions().width(12).color(ContextCompat.getColor(

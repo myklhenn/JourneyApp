@@ -203,9 +203,9 @@ public class MainActivity extends AppCompatActivity {
         testActiveJourneys.add(new JourneyListItem("Active Journey 1", 20));
         testActiveJourneys.add(new JourneyListItem("Active Journey 2", 65));
         testActiveJourneys.add(new JourneyListItem("Active Journey 3", 70));
-        testInvitedJourneys.add(new JourneyListItem("Invited Journey 1", 20));
-        testInvitedJourneys.add(new JourneyListItem("Invited Journey 2", 65));
-        testInvitedJourneys.add(new JourneyListItem("Invited Journey 3", 70));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 1", 10));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 2", 35));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 3", 90));
         prepareJourneysLists();
     }
 

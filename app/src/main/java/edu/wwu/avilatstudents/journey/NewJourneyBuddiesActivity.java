@@ -38,14 +38,15 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
         nextStepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: get list of buddies for which buddyItem.selected == true
-
-                // TODO: make API call to add selected buddies to journey in database
-
+                // add buddies and send to database as well as next activity
+                Bundle bundle = getIntent().getExtras();
                 Intent nextStep = new Intent(NewJourneyBuddiesActivity.this,
                         NewJourneyLocationActivity.class);
+                nextStep.putExtra("journeyId", bundle.getString("jID"));
+                nextStep.putExtra("journeyTitle", bundle.getString("titleN"));
+                // add buddies to database
                 startActivity(nextStep);
+                finish();
             }
         });
 
