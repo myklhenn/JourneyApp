@@ -26,7 +26,12 @@ public class DatabaseManager {
     private StringBuilder dbResponse;
     private static final String API_VERSION = "v1";
 
-    public static final String SIGN_OUT_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/sessions/";
+    public static final String SIGN_UP_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/registrations/";
+    public static final String SIGN_IN_OR_OUT_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/sessions/";
+    public static final String CREATE_JOURNEY_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/create/";
+    public static final String UPDATE_JOURNEY_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/update/";
+    public static final String ADD_TRAVELER_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/add_traveler/";
+    public static final String ADD_STEPS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/steps/update_steps/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
@@ -54,7 +59,7 @@ public class DatabaseManager {
         return dbResponseToReturn;
     }
 
-    public String signUp(String url, String username, String email, String password, String passwordConfirmation){
+    public String signUp(String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
 
@@ -71,14 +76,14 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "signUp");
+        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "signUp");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
     }
 
     public String signOut(String email, String auth_token) {
-        new DownloadData().execute(SIGN_OUT_URI, "", "signOut", email, auth_token, "DELETE");
+        new DownloadData().execute(SIGN_IN_OR_OUT_URI, "", "signOut", email, auth_token, "DELETE");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -103,7 +108,7 @@ public class DatabaseManager {
         }
     }
 
-    public void updateSteps(String url, String email, String authentication, String steps){
+    public void updateSteps(String email, String authentication, String steps){
         JSONObject jsonObjectInfo = null;
 
         try{
@@ -114,10 +119,10 @@ public class DatabaseManager {
         }
 
         Log.d("database", "JSON: " + jsonObjectInfo.toString() + "\tEmail: " + email + "\tSteps: " + steps + "\tAuth: " + authentication);
-        new DownloadData().execute(url, "PATCH", jsonObjectInfo.toString(), "updateSteps", email, authentication);
+        new DownloadData().execute(ADD_STEPS_URI, "PATCH", jsonObjectInfo.toString(), "updateSteps", email, authentication);
     }
 
-    public String createJourney(String url, String email, String authentication, String journeyTitle){
+    public String createJourney(String email, String authentication, String journeyTitle){
         JSONObject jsonObjectJourney = null;
         JSONObject jsonObjectInfo = null;
         JSONObject jsonObjectInput = null;
@@ -127,13 +132,13 @@ public class DatabaseManager {
             jsonObjectInfo.put("title", journeyTitle);
 
             jsonObjectJourney = new JSONObject();
-            jsonObjectJourney.put("user", jsonObjectInfo);
+            jsonObjectJourney.put("journey", jsonObjectInfo);
         }catch (JSONException e){
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
         try {
-            String input = new DownloadData().execute(url, "POST", jsonObjectJourney.toString(), "createJourney", email, authentication).get();
+            String input = new DownloadData().execute(CREATE_JOURNEY_URI, "POST", jsonObjectJourney.toString(), "createJourney", email, authentication).get();
             jsonObjectInput = new JSONObject(input).getJSONObject("data").getJSONObject("journey");
             return jsonObjectInput.getString("id");
 
@@ -143,7 +148,42 @@ public class DatabaseManager {
         return null;
     }
 
-    public void addTravelerToJourney(String url, String email, String authentication, String journeyID){
+    public void updateJourney(String email, String authentication, String journeyID,
+                              String title, String startLat, String startLong,
+                              String endLat, String endLong, String startLoc,
+                              String endLoc, String totalSteps){
+        JSONObject jsonObjectJourney = null;
+        JSONObject jsonObjectInfo = null;
+
+        try{
+            jsonObjectInfo = new JSONObject();
+            if(!title.isEmpty())
+                jsonObjectInfo.put("title", title);
+            if(!startLat.isEmpty())
+                jsonObjectInfo.put("start_latitude", startLat);
+            if(!startLong.isEmpty())
+                jsonObjectInfo.put("start_longitude", startLong);
+            if(!endLat.isEmpty())
+                jsonObjectInfo.put("end_latitude", endLat);
+            if(!endLong.isEmpty())
+                jsonObjectInfo.put("end_longitude", endLong);
+            if(!startLoc.isEmpty())
+                jsonObjectInfo.put("start_location", startLoc);
+            if(!endLoc.isEmpty())
+                jsonObjectInfo.put("end_location", endLoc);
+            if(!totalSteps.isEmpty())
+                jsonObjectInfo.put("total_steps_required", totalSteps);
+
+            jsonObjectJourney = new JSONObject();
+            jsonObjectJourney.put("journey", jsonObjectInfo);
+
+            new DownloadData().execute(UPDATE_JOURNEY_URI, "PATCH", jsonObjectJourney.toString(), "updateJourney", email, authentication, journeyID);
+        }catch(Exception e){
+            Log.e("database", "Error with DownloadData().execute: " + e);
+        }
+    }
+
+    public void addTravelerToJourney(String email, String authentication, String journeyID){
         JSONObject jsonObjectInfo = null;
 
         try{
@@ -153,8 +193,10 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, "POST", jsonObjectInfo.toString(), "addTravelerToJourney", email, authentication, journeyID);
+        new DownloadData().execute(ADD_TRAVELER_URI, "POST", jsonObjectInfo.toString(), "addTravelerToJourney", email, authentication, journeyID);
     }
+
+
 
     //PARAMETERS: (url, requestMethod, output, method, email, authentication, journeyID)
     private class DownloadData extends AsyncTask<String, Void, String> {
@@ -178,15 +220,12 @@ public class DatabaseManager {
                 connection.setRequestProperty("User-Agent", "curl/7.47.0");
 
                 if(!(method.equals("signUp")) && !(method.equals("login"))){
-/*                    String email = strings[4];
-                    String authentication = strings[5];*/
-                    String email = strings[3];
-                    String authentication = strings[4];
-                    connection.setRequestMethod(strings[5]);
+                    String email = strings[4];
+                    String authentication = strings[5];
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                if(method.equals("addTravelerToJourney")){
+                if(method.equals("addTravelerToJourney") || method.equals("updateJourney")){
                     String journeyID = strings[6];
                     connection.setRequestProperty("X-Journey-Id", journeyID);
                 }
@@ -194,7 +233,7 @@ public class DatabaseManager {
                 connection.connect();
                 sendOutput(outputData);
                 receiveInput();
-                
+
                 if((method.equals("signUp")) || (method.equals("login"))) {
                     updateSession(outputData, inputData);
                 }
