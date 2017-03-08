@@ -8,4 +8,5 @@
     <color name="progressBarBkg">#88999999</color>
     <color name="actionBarBkg">#ccd5d0b5</color>
     <color name="activityBkg">#88999999</color>
+    <color name="errorColor">#ff0033</color>
 </resources>
