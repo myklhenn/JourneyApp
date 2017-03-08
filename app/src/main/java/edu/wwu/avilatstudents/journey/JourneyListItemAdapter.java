@@ -51,6 +51,7 @@ class JourneyListItemAdapter extends ArrayAdapter<JourneyListItem> {
 
         journeyCard.journeyName.setText(this.journeys.get(pos).getName());
         journeyCard.journeyProgress.setProgress(this.journeys.get(pos).getProgress());
+        journeyCard.journeyMap.setImageResource(this.journeys.get(pos).getMapRes());
 
         return view;
     }

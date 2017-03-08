@@ -2,8 +2,10 @@ package edu.wwu.avilatstudents.journey;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.GetChars;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +36,14 @@ import static edu.wwu.avilatstudents.journey.R.id.map;
 import static com.google.maps.android.PolyUtil.decode;
 
 public class NewJourneyLocationActivity extends FragmentActivity implements OnMapReadyCallback {
+    static String stepDistance;
+    static String startLocation;
+    static String endLocation;
     private static int nextPath = 0;
     private GoogleMap mMap;
     ViewGroup transition_start;
-
+    DatabaseManager dbm;
+    SessionManager sessM;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +52,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        dbm = new DatabaseManager(getApplicationContext());
+        sessM = new SessionManager(getApplicationContext());
     }
 
     @Override
@@ -109,8 +117,12 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         finishBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle bundle = getIntent().getExtras();
+                String id = bundle.getString("journeyID");
+                String journeyName = bundle.getString("journeyTitle");
                 // put all info into database
-
+                dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
+                        Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
                 finish();
             }
         });
@@ -184,6 +196,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
             progressDialog.hide();
             progressDialog.dismiss();
             if (result!=null) {
+                Log.d("results", result);
                 drawPath(result);
             }
         }
@@ -211,8 +224,15 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 if (nextPath == allRoutes) {
                     nextPath = 0;
                 }
+
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Path Distance is " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String miles = "" + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
+                String[] splitForSteps = miles.split("\\s+");
+                int totalSteps = Integer.valueOf(splitForSteps[0]) * 2000;
+                stepDistance = Integer.toString(totalSteps);
+                startLocation = "" + ((JSONObject) routeLegs.get(0)).get("start_address");
+                endLocation = "" + ((JSONObject) routeLegs.get(0)).get("end_address");
                 pathDistance.setText(distance);
                 pathDistance.setVisibility(View.VISIBLE);
                 PolylineOptions options = new PolylineOptions().width(12).color(Color.rgb(255, 102, 178)).geodesic(true);

@@ -3,6 +3,7 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -55,18 +56,8 @@ public class MainActivity extends AppCompatActivity {
     ExpandableHeightGridView activeJourneyCards;
     ExpandableHeightGridView invitedJourneyCards;
 
-    BuddiesListItem[] testBuddies = {
-        new BuddiesListItem("Mark"),
-        new BuddiesListItem("Brendan"),
-        new BuddiesListItem("Michael"),
-        new BuddiesListItem("Tyler")
-    };
-
+    ArrayList<BuddiesListItem> testBuddies = new ArrayList<>();
     ArrayList<JourneyListItem> testActiveJourneys = new ArrayList<>();
-        //new JourneyListItem("Active Journey 1", 20),
-        //new JourneyListItem("Active Journey 2", 65),
-        //new JourneyListItem("Active Journey 3", 70),
-
     ArrayList<JourneyListItem> testInvitedJourneys = new ArrayList<>();
 
     @Override
@@ -74,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         final SessionManager sessionManager = new SessionManager(this);
+        final DatabaseManager databaseManager = new DatabaseManager(this);
         Log.d("login", sessionManager.isLoggedIn() ? "true" : "false");
         if(!sessionManager.isLoggedIn()) {
             sessionManager.login();
@@ -85,11 +77,20 @@ public class MainActivity extends AppCompatActivity {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         SensorEventListener sensorEventListener = new SensorEventListener() {
-            long lastTimeStamp;
+            float stepsLastUpdate = 0;
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if(sensorEvent.values[0] > 0){
-                    //TODO: send sensorEvent.values[0] to database
+                if(sessionManager.isLoggedIn() && (sensorEvent.values[0] - stepsLastUpdate) >= 10){
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked more than 10 steps");
+                    databaseManager.updateSteps(
+                            sessionManager.getEmail(),
+                            sessionManager.getAuthentication(),
+                            Float.toString(sensorEvent.values[0]));
+                    stepsLastUpdate = sensorEvent.values[0];
+                }else {
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked less than 10 steps");
                 }
             }
 
@@ -99,12 +100,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        boolean batchSupported = sensorManager.registerListener(sensorEventListener, sensor, 1000000, 10000000);
+        boolean batchSupported = sensorManager.registerListener(
+                sensorEventListener, sensor, 1000000, 10000000);
 
-        Toast.makeText(getApplicationContext(), "Hello " + sessionManager.getUsername() + "!", Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
-
+        // temporary user login info logging
+        Log.d("database", "Hello " + sessionManager.getUsername() + "!");
+        Log.d("database", "Your email is " + sessionManager.getEmail() + "!");
+        Log.d("database", "Authentication is " + sessionManager.getAuthentication() + "!");
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -134,30 +136,29 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener navFabsOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            TransitionManager.beginDelayedTransition(transitionContainer);
-            visibleLayout.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition(transitionContainer);
+                visibleLayout.setVisibility(View.GONE);
 
-            switch (view.getId()) {
-                case R.id.buddies_fab:
-                    actionBar.show();
-                    visibleLayout = buddiesLayout;
-                    setNavButtonColorSelected(buddiesFab);
-                    updateActionBar(R.id.buddies_fab);
-                    break;
-                case R.id.journeys_fab:
-                    actionBar.show();
-                    visibleLayout = journeysLayout;
-                    setNavButtonColorSelected(journeysFab);
-                    updateActionBar(R.id.journeys_fab);
-                    break;
-                case R.id.settings_fab:
-                    actionBar.hide();
-                    visibleLayout = settingsLayout;
-                    setNavButtonColorSelected(settingsFab);
-
-            }
-            visibleLayout.setVisibility(View.VISIBLE);
-            visibleLayout.requestFocus();
+                switch (view.getId()) {
+                    case R.id.buddies_fab:
+                        actionBar.show();
+                        visibleLayout = buddiesLayout;
+                        setNavButtonColorSelected(buddiesFab);
+                        updateActionBar(R.id.buddies_fab);
+                        break;
+                    case R.id.journeys_fab:
+                        actionBar.show();
+                        visibleLayout = journeysLayout;
+                        setNavButtonColorSelected(journeysFab);
+                        updateActionBar(R.id.journeys_fab);
+                        break;
+                    case R.id.settings_fab:
+                        actionBar.hide();
+                        visibleLayout = settingsLayout;
+                        setNavButtonColorSelected(settingsFab);
+                }
+                visibleLayout.setVisibility(View.VISIBLE);
+                visibleLayout.requestFocus();
             }
         };
         buddiesFab.setOnClickListener(navFabsOnClickListener);
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sessionManager.logout();
+                databaseManager.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
                 actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
@@ -175,14 +177,23 @@ public class MainActivity extends AppCompatActivity {
                 visibleLayout.setVisibility(View.GONE);
                 journeysLayout.setVisibility(View.VISIBLE);
                 visibleLayout = journeysLayout;
-                visibleLayout.requestFocus();
             }
         });
 
         // bind data and listeners to ListView in view_buddies
+        testBuddies.add(new BuddiesListItem("Mark"));
+        testBuddies.add(new BuddiesListItem("Brendan"));
+        testBuddies.add(new BuddiesListItem("Michael"));
+        testBuddies.add(new BuddiesListItem("Tyler"));
         prepareBuddiesList();
 
         // bind data and listeners to active GridViews in view_journeys
+        testActiveJourneys.add(new JourneyListItem("Active Journey 1", 20));
+        testActiveJourneys.add(new JourneyListItem("Active Journey 2", 65));
+        testActiveJourneys.add(new JourneyListItem("Active Journey 3", 70));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 1", 20));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 2", 65));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 3", 70));
         prepareJourneysLists();
     }
 
@@ -235,34 +246,34 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void prepareBuddiesList() {
+    private void prepareBuddiesList() {
         buddiesList = (ListView) findViewById(R.id.buddies_list);
         BuddiesListItemAdapter bla = new BuddiesListItemAdapter(this, testBuddies);
         buddiesList.setAdapter(bla);
         buddiesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
-            //View buddiesView = findViewById(R.id.buddies_layout);
+                BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
+                //View buddiesView = findViewById(R.id.buddies_layout);
 
-            Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
-            showBuddyInfo.putExtra("buddyName", buddy.getName());
-            startActivity(showBuddyInfo);
+                Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
+                showBuddyInfo.putExtra("buddyName", buddy.getName());
+                startActivity(showBuddyInfo);
             }
         });
     }
 
-    public void prepareJourneysLists() {
+    private void prepareJourneysLists() {
         // prepare listener/handler for transition to JourneyActivity
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
-            //View journeyView = findViewById(R.id.activity_journey);
+                JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
+                //View journeyView = findViewById(R.id.activity_journey);
 
-            Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
-            showJourney.putExtra("journeyName", journey.getName());
-            startActivity(showJourney);
+                Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
+                showJourney.putExtra("journeyName", journey.getName());
+                startActivity(showJourney);
             }
         };
 
@@ -281,18 +292,7 @@ public class MainActivity extends AppCompatActivity {
         invitedJourneyCards.setOnItemClickListener(listener);
     }
 
-//    public void transitionToJourneyActivity(View view){
-//        View journeyTitleView = findViewById(R.id.journey_title);
-//        Intent intent = new Intent(this, JourneyActivity.class);
-//        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-//                this,
-//                journeyTitleView,
-//                journeyTitleView.getTransitionName())
-//                .toBundle();
-//        startActivity(intent, bundle);
-//    }
-
-    public void updateActionBar(int fabId) {
+    private void updateActionBar(int fabId) {
         switch (fabId) {
             case R.id.buddies_fab:
                 // (CHANGE WHAT mainSearch ACTUALLY DOES)
@@ -322,17 +322,22 @@ public class MainActivity extends AppCompatActivity {
         item.setVisible(true);
     }
 
-    public void setNavButtonColorSelected(FloatingActionButton navButton) {
+    private void setNavButtonColorSelected(FloatingActionButton navButton) {
         // reset nav buttons to original color
+        buddiesFab.getDrawable().clearColorFilter();
         buddiesFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
+        journeysFab.getDrawable().clearColorFilter();
         journeysFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
+        settingsFab.getDrawable().clearColorFilter();
         settingsFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
         // set specified nav button to selected color
+        navButton.getDrawable().setColorFilter(ContextCompat.getColor(
+                MainActivity.this, android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         navButton.setBackgroundTintList(ColorStateList.valueOf(
-                ContextCompat.getColor(MainActivity.this, R.color.mainNavSelected)));
+                ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
     }
 
 }

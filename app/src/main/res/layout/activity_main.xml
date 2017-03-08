@@ -5,8 +5,17 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tab_background_selected"
     tools:context="edu.wwu.avilatstudents.journey.MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.1"
+        android:background="#8C9073"
+        android:elevation="-1dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/ic_map_vector_outline" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -52,12 +61,12 @@
         android:layout_alignParentStart="true">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
+            android:background="@color/actionBarBkg"
             android:minHeight="?attr/actionBarSize"
-            android:id="@+id/toolbar_main">
+            android:theme="?attr/actionBarTheme">
 
             <SearchView
                 android:id="@+id/search_main"
