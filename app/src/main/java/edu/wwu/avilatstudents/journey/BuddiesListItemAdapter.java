@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Created by myklhenn on 2/27/17.
  */
@@ -17,9 +19,9 @@ import android.widget.TextView;
 class BuddiesListItemAdapter extends ArrayAdapter<BuddiesListItem>{
 
     private final Activity context;
-    private final BuddiesListItem[] buddies;
+    private final ArrayList<BuddiesListItem> buddies;
 
-    BuddiesListItemAdapter(Activity context, BuddiesListItem[] buddies) {
+    BuddiesListItemAdapter(Activity context, ArrayList<BuddiesListItem> buddies) {
         super(context, R.layout.item_buddy, buddies);
         this.context = context;
         this.buddies = buddies;
@@ -28,7 +30,6 @@ class BuddiesListItemAdapter extends ArrayAdapter<BuddiesListItem>{
     @NonNull
     @Override
     public View getView(int pos, View view, @NonNull ViewGroup parent) {
-        //LayoutInflater inflater = context.getLayoutInflater();
         BuddiesListItemViewHolder buddyItem;
 
         if (view == null) {
@@ -45,15 +46,15 @@ class BuddiesListItemAdapter extends ArrayAdapter<BuddiesListItem>{
             buddyItem = (BuddiesListItemViewHolder) view.getTag();
         }
 
-        buddyItem.buddyName.setText(this.buddies[pos].getName());
-        buddyItem.buddyIcon.setImageResource(this.buddies[pos].getIconRes());
+        buddyItem.buddyName.setText(this.buddies.get(pos).getName());
+        buddyItem.buddyIcon.setImageResource(this.buddies.get(pos).getIconRes());
 
         return view;
     }
 
     @Override
     public BuddiesListItem getItem(int pos) {
-        return this.buddies[pos];
+        return this.buddies.get(pos);
     }
 }
 

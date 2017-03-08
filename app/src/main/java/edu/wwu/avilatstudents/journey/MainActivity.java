@@ -27,6 +27,8 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_OK = 0;
@@ -53,24 +55,9 @@ public class MainActivity extends AppCompatActivity {
     ExpandableHeightGridView activeJourneyCards;
     ExpandableHeightGridView invitedJourneyCards;
 
-    BuddiesListItem[] testBuddies = {
-        new BuddiesListItem("Mark"),
-        new BuddiesListItem("Brendan"),
-        new BuddiesListItem("Michael"),
-        new BuddiesListItem("Tyler")
-    };
-
-    JourneyListItem[] testActiveJourneys = {
-        new JourneyListItem("Active Journey 1", 20),
-        new JourneyListItem("Active Journey 2", 65),
-        new JourneyListItem("Active Journey 3", 70),
-    };
-
-    JourneyListItem[] testInvitedJourneys = {
-        new JourneyListItem("Invited Journey 1", 20),
-        new JourneyListItem("Invited Journey 2", 65),
-        new JourneyListItem("Invited Journey 3", 70),
-    };
+    ArrayList<BuddiesListItem> testBuddies = new ArrayList<>();
+    ArrayList<JourneyListItem> testActiveJourneys = new ArrayList<>();
+    ArrayList<JourneyListItem> testInvitedJourneys = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +90,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        boolean batchSupported = sensorManager.registerListener(sensorEventListener, sensor, 1000000, 10000000);
+        boolean batchSupported = sensorManager.registerListener(
+                sensorEventListener, sensor, 1000000, 10000000);
 
-        Toast.makeText(getApplicationContext(), "Hello " + sessionManager.getUsername() + "!", Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
-
+        // temporary user login info logging
+        System.out.println("Hello " + sessionManager.getUsername() + "!");
+        System.out.println("Your email is " + sessionManager.getEmail() + "!");
+        System.out.println("Authentication is " + sessionManager.getAuthentication() + "!");
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -138,30 +126,30 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener navFabsOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            TransitionManager.beginDelayedTransition(transitionContainer);
-            visibleLayout.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition(transitionContainer);
+                visibleLayout.setVisibility(View.GONE);
 
-            switch (view.getId()) {
-                case R.id.buddies_fab:
-                    actionBar.show();
-                    visibleLayout = buddiesLayout;
-                    setNavButtonColorSelected(buddiesFab);
-                    updateActionBar(R.id.buddies_fab);
-                    break;
-                case R.id.journeys_fab:
-                    actionBar.show();
-                    visibleLayout = journeysLayout;
-                    setNavButtonColorSelected(journeysFab);
-                    updateActionBar(R.id.journeys_fab);
-                    break;
-                case R.id.settings_fab:
-                    actionBar.hide();
-                    visibleLayout = settingsLayout;
-                    setNavButtonColorSelected(settingsFab);
+                switch (view.getId()) {
+                    case R.id.buddies_fab:
+                        actionBar.show();
+                        visibleLayout = buddiesLayout;
+                        setNavButtonColorSelected(buddiesFab);
+                        updateActionBar(R.id.buddies_fab);
+                        break;
+                    case R.id.journeys_fab:
+                        actionBar.show();
+                        visibleLayout = journeysLayout;
+                        setNavButtonColorSelected(journeysFab);
+                        updateActionBar(R.id.journeys_fab);
+                        break;
+                    case R.id.settings_fab:
+                        actionBar.hide();
+                        visibleLayout = settingsLayout;
+                        setNavButtonColorSelected(settingsFab);
 
-            }
-            visibleLayout.setVisibility(View.VISIBLE);
-            visibleLayout.requestFocus();
+                }
+                visibleLayout.setVisibility(View.VISIBLE);
+                visibleLayout.requestFocus();
             }
         };
         buddiesFab.setOnClickListener(navFabsOnClickListener);
@@ -184,17 +172,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // bind data and listeners to ListView in view_buddies
+        testBuddies.add(new BuddiesListItem("Mark"));
+        testBuddies.add(new BuddiesListItem("Brendan"));
+        testBuddies.add(new BuddiesListItem("Michael"));
+        testBuddies.add(new BuddiesListItem("Tyler"));
         prepareBuddiesList();
 
         // bind data and listeners to active GridViews in view_journeys
+        testActiveJourneys.add(new JourneyListItem("Active Journey 1", 20));
+        testActiveJourneys.add(new JourneyListItem("Active Journey 2", 65));
+        testActiveJourneys.add(new JourneyListItem("Active Journey 3", 70));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 1", 20));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 2", 65));
+        testInvitedJourneys.add(new JourneyListItem("Invited Journey 3", 70));
         prepareJourneysLists();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        mainSearch.clearFocus();
     }
 
     @Override
@@ -244,12 +235,12 @@ public class MainActivity extends AppCompatActivity {
         buddiesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
-            //View buddiesView = findViewById(R.id.buddies_layout);
+                BuddiesListItem buddy = (BuddiesListItem) parent.getItemAtPosition(pos);
+                //View buddiesView = findViewById(R.id.buddies_layout);
 
-            Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
-            showBuddyInfo.putExtra("buddyName", buddy.getName());
-            startActivity(showBuddyInfo);
+                Intent showBuddyInfo = new Intent(MainActivity.this, BuddyInfoActivity.class);
+                showBuddyInfo.putExtra("buddyName", buddy.getName());
+                startActivity(showBuddyInfo);
             }
         });
     }
@@ -259,40 +250,29 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-            JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
-            //View journeyView = findViewById(R.id.activity_journey);
+                JourneyListItem journey = (JourneyListItem) parent.getItemAtPosition(pos);
+                //View journeyView = findViewById(R.id.activity_journey);
 
-            Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
-            showJourney.putExtra("journeyName", journey.getName());
-            startActivity(showJourney);
+                Intent showJourney = new Intent(MainActivity.this, JourneyActivity.class);
+                showJourney.putExtra("journeyName", journey.getName());
+                startActivity(showJourney);
             }
         };
 
         // bind data to active journeys view
         activeJourneyCards = (ExpandableHeightGridView) findViewById(R.id.active_journey_cards);
-        JourneyListAdapter jla1 = new JourneyListAdapter(this, testActiveJourneys);
+        JourneyListItemAdapter jla1 = new JourneyListItemAdapter(this, testActiveJourneys);
         activeJourneyCards.setAdapter(jla1);
         activeJourneyCards.setExpanded(true);
         activeJourneyCards.setOnItemClickListener(listener);
 
         // bind data to active journeys view
         invitedJourneyCards = (ExpandableHeightGridView) findViewById(R.id.invited_journey_cards);
-        JourneyListAdapter jla2 = new JourneyListAdapter(this, testInvitedJourneys);
+        JourneyListItemAdapter jla2 = new JourneyListItemAdapter(this, testInvitedJourneys);
         invitedJourneyCards.setAdapter(jla2);
         invitedJourneyCards.setExpanded(true);
         invitedJourneyCards.setOnItemClickListener(listener);
     }
-
-//    public void transitionToJourneyActivity(View view){
-//        View journeyTitleView = findViewById(R.id.journey_title);
-//        Intent intent = new Intent(this, JourneyActivity.class);
-//        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-//                this,
-//                journeyTitleView,
-//                journeyTitleView.getTransitionName())
-//                .toBundle();
-//        startActivity(intent, bundle);
-//    }
 
     private void updateActionBar(int fabId) {
         switch (fabId) {
