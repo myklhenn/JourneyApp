@@ -3,24 +3,23 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
+import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class NewJourneyBuddiesActivity extends AppCompatActivity {
 
     SearchView searchBuddies;
     ListView buddiesList;
     Button nextStepBtn;
+    ProgressBar journeyCreationProgress;
 
-    BuddiesListSelectableItem[] testBuddies = {
-        new BuddiesListSelectableItem("Mark"),
-        new BuddiesListSelectableItem("Brendan"),
-        new BuddiesListSelectableItem("Michael"),
-        new BuddiesListSelectableItem("Tyler")
-    };
+    ArrayList<BuddiesListSelectableItem> testBuddies = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +29,11 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
         searchBuddies = (SearchView) findViewById(R.id.search_buddies);
         nextStepBtn = (Button) findViewById(R.id.journey_buddies_next_btn);
         prepareBuddiesList();
+        // animate progress bar from 25 to 50 percent
+        journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
+        ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 25, 50);
+        anim.setDuration(1000);
+        journeyCreationProgress.startAnimation(anim);
 
         nextStepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,9 +49,14 @@ public class NewJourneyBuddiesActivity extends AppCompatActivity {
             }
         });
 
+        journeyCreationProgress.setProgress(50);
     }
 
     private void prepareBuddiesList() {
+        testBuddies.add(new BuddiesListSelectableItem("Mark"));
+        testBuddies.add(new BuddiesListSelectableItem("Brendan"));
+        testBuddies.add(new BuddiesListSelectableItem("Michael"));
+        testBuddies.add(new BuddiesListSelectableItem("Tyler"));
         buddiesList = (ListView) findViewById(R.id.select_buddies_list);
         final BuddiesListSelectableItemAdapter adptr = new BuddiesListSelectableItemAdapter(this, testBuddies);
         buddiesList.setAdapter(adptr);

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ff3f51b5</color>
-    <color name="colorPrimaryDark">#ff303f9f</color>
-    <color name="colorAccent">#ff009688</color>
+    <color name="journeyAccent">#ff009688</color>
     <color name="mainNavBase">#fff2eccc</color>
-    <color name="itemBkgTransparent">#bbdbdbdb</color>
+    <color name="itemBkgTransparent">#bbcfcfcf</color>
+    <color name="itemBkgTransparentSelected">#bb7fa87f</color>
     <color name="progressBarBkg">#88999999</color>
-    <color name="actionBarBkg">#ccd5d0b5</color>
+    <color name="actionBarBkg">#bbe4dfc4</color>
     <color name="activityBkg">#88999999</color>
-    <color name="errorColor">#ff0033</color>
+    <color name="mapMarkerStart">#ff527ec4</color>
+    <color name="mapMarkerEnd">#ffcd585a</color>
+    <color name="errorColor">#fff04642</color>
 </resources>

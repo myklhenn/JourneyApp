@@ -24,9 +24,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton journeysFab;
     private FloatingActionButton settingsFab;
     private Button signOutButton;
+
+    private ImageView settingsAccountIcon;
+    private TextView settingsAccountName;
 
     ListView buddiesList;
     ExpandableHeightGridView activeJourneyCards;
@@ -108,6 +112,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("database", "Hello " + sessionManager.getUsername() + "!");
         Log.d("database", "Your email is " + sessionManager.getEmail() + "!");
         Log.d("database", "Authentication is " + sessionManager.getAuthentication() + "!");
+
+        settingsAccountIcon = (ImageView) findViewById(R.id.settings_account_picture);
+        settingsAccountIcon.getDrawable().setColorFilter(ContextCompat.getColor(
+                MainActivity.this, R.color.activityBkg), PorterDuff.Mode.MULTIPLY);
+
+        settingsAccountName = (TextView) findViewById(R.id.settings_account_name);
+        settingsAccountName.setText(sessionManager.getUsername());
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -205,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         updateActionBar(R.id.journeys_fab);
-        mainSearch.clearFocus();
 
         // link all menu items
         MenuItem addBuddyItem = mainOptionsMenu.findItem(R.id.add_buddy_item);
@@ -329,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         navButton.getDrawable().setColorFilter(ContextCompat.getColor(
                 MainActivity.this, android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         navButton.setBackgroundTintList(ColorStateList.valueOf(
-                ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
+                ContextCompat.getColor(MainActivity.this, R.color.journeyAccent)));
     }
 
 }

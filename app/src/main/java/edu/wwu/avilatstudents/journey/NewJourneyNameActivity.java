@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 public class NewJourneyNameActivity extends AppCompatActivity {
 
-    EditText journeyNameInput;
-    Button nextStepBtn;
+    private EditText journeyNameInput;
+    private Button nextStepBtn;
+    private ProgressBar journeyCreationProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,11 @@ public class NewJourneyNameActivity extends AppCompatActivity {
 
         journeyNameInput = (EditText) findViewById(R.id.journey_name_textinput);
         nextStepBtn = (Button) findViewById(R.id.journey_name_next_btn);
+        // animate progress bar from 0 to 25 percent
+        journeyCreationProgress = (ProgressBar) findViewById(R.id.journey_creation_progress);
+        ProgressBarAnimation anim = new ProgressBarAnimation(journeyCreationProgress, 0, 25);
+        anim.setDuration(1000);
+        journeyCreationProgress.startAnimation(anim);
 
         nextStepBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -282,9 +282,9 @@ public class DatabaseManager {
         protected void onPostExecute(String s) {
             Log.d("database", "Input: " + s);
             SessionManager sessionManager = new SessionManager(context);
-            Toast.makeText(context, "Hello " + sessionManager.getUsername() + "!", Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "Your email is " + sessionManager.getEmail() + "!", Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "Authentication is " + sessionManager.getAuthentication() + "!", Toast.LENGTH_LONG).show();
+            Log.d("database", "Hello " + sessionManager.getUsername() + "!");
+            Log.d("database", "Your email is " + sessionManager.getEmail() + "!");
+            Log.d("database", "Authentication is " + sessionManager.getAuthentication() + "!");
         }
 
 

@@ -1,40 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="edu.wwu.avilatstudents.journey.NewJourneyBuddiesActivity"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
-    android:layout_alignParentStart="true"
-    tools:context="edu.wwu.avilatstudents.journey.NewJourneyBuddiesActivity">
+    android:layout_alignParentStart="true">
+
+    <ProgressBar
+        android:id="@+id/journey_creation_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:animationResolution="@android:integer/config_shortAnimTime"
+        android:isScrollContainer="false"
+        android:maxHeight="5dp"
+        android:minHeight="5dp"
+        android:progress="25"
+        android:progressDrawable="@drawable/progressbar_color_accent" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.1"
+        android:background="#8C9073"
+        android:elevation="-1dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/ic_map_vector_outline" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
+            android:background="@color/actionBarBkg"
             android:minHeight="?attr/actionBarSize"
-            android:id="@+id/toolbar_main">
+            android:theme="?attr/actionBarTheme">
 
-            <android.support.v7.widget.SearchView
+            <SearchView
                 android:id="@+id/search_buddies"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:queryHint="@string/buddies_search_hint"
-                android:iconifiedByDefault="false" />
+                android:focusable="false"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/buddies_search_hint" />
 
         </android.support.v7.widget.Toolbar>
 
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/actionBarBkg"
+            android:paddingBottom="5dp"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:text="Choose additional travelers for your journey:"
+            android:textSize="16sp" />
+
         <ListView
+            android:id="@+id/select_buddies_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/select_buddies_list" />
+            android:layout_margin="10dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            android:verticalSpacing="10dp" />
 
     </LinearLayout>
 
@@ -44,8 +88,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="20dp"
-        android:text="Next" />
+        android:layout_marginBottom="45dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="@color/journeyAccent"
+        android:isScrollContainer="false"
+        android:minHeight="60dp"
+        android:minWidth="110dp"
+        android:text="Next"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>
