@@ -3,6 +3,7 @@ package edu.wwu.avilatstudents.journey;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -94,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
                 sensorEventListener, sensor, 1000000, 10000000);
 
         // temporary user login info logging
-        System.out.println("Hello " + sessionManager.getUsername() + "!");
-        System.out.println("Your email is " + sessionManager.getEmail() + "!");
-        System.out.println("Authentication is " + sessionManager.getAuthentication() + "!");
+        Log.d("database", "Hello " + sessionManager.getUsername() + "!");
+        Log.d("database", "Your email is " + sessionManager.getEmail() + "!");
+        Log.d("database", "Authentication is " + sessionManager.getAuthentication() + "!");
 
         // set toolbar as the activity's ActionBar and hide the title
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar_main));
@@ -146,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
                         actionBar.hide();
                         visibleLayout = settingsLayout;
                         setNavButtonColorSelected(settingsFab);
-
                 }
                 visibleLayout.setVisibility(View.VISIBLE);
                 visibleLayout.requestFocus();
@@ -306,15 +306,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void setNavButtonColorSelected(FloatingActionButton navButton) {
         // reset nav buttons to original color
+        buddiesFab.getDrawable().clearColorFilter();
         buddiesFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
+        journeysFab.getDrawable().clearColorFilter();
         journeysFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
+        settingsFab.getDrawable().clearColorFilter();
         settingsFab.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(MainActivity.this, R.color.mainNavBase)));
         // set specified nav button to selected color
+        navButton.getDrawable().setColorFilter(ContextCompat.getColor(
+                MainActivity.this, android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         navButton.setBackgroundTintList(ColorStateList.valueOf(
-                ContextCompat.getColor(MainActivity.this, R.color.mainNavSelected)));
+                ContextCompat.getColor(MainActivity.this, R.color.colorAccent)));
     }
 
 }

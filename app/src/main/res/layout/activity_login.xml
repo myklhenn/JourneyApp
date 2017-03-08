@@ -123,10 +123,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="100dp"
                     android:layout_marginStart="100dp"
-                    android:backgroundTint="#009688"
+                    android:backgroundTint="@color/colorAccent"
                     android:elevation="24dp"
                     android:text="@string/login"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@android:color/white"
                     android:textSize="16sp" />
 
                 <android.support.v7.widget.AppCompatButton
@@ -144,7 +144,7 @@
                     android:shadowRadius="1"
                     android:text="@string/or_sign_up"
                     android:textAlignment="center"
-                    android:textColor="#009688"
+                    android:textColor="@color/colorAccent"
                     android:textSize="16sp" />
 
             </LinearLayout>
