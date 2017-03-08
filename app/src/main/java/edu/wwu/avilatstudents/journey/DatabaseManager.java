@@ -24,13 +24,14 @@ import java.net.URL;
 public class DatabaseManager {
     Context context;
     private StringBuilder dbResponse;
+    private static final String API_VERSION = "v1";
 
+    public static final String SIGN_OUT_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/sessions/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
-
 
     public String login(String url, String email, String password){
         JSONObject jsonObjectUser = null;
@@ -71,6 +72,13 @@ public class DatabaseManager {
         }
 
         new DownloadData().execute(url, jsonObjectUser.toString(), "signUp");
+        String dbResponseToReturn = dbResponse.toString();
+        dbResponse.delete(0, dbResponse.length());
+        return dbResponseToReturn;
+    }
+
+    public String signOut(String email, String auth_token) {
+        new DownloadData().execute(SIGN_OUT_URI, "", "signOut", email, auth_token, "DELETE");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -131,6 +139,7 @@ public class DatabaseManager {
                 if(!(method.equals("signUp")) && !(method.equals("login"))){
                     String email = strings[3];
                     String authentication = strings[4];
+                    connection.setRequestMethod(strings[5]);
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
@@ -139,13 +148,13 @@ public class DatabaseManager {
                 sendOutput(outputData);
                 receiveInput();
 
-                if((method.equals("signUp")) || (method.equals("login"))) updateSession(outputData, inputData);
+                if((method.equals("signUp")) || (method.equals("login"))) {
+                    updateSession(outputData, inputData);
+                }
 
-
-
-            }catch(Exception e){
+            } catch(Exception e){
                 Log.e("database", "Connection fail: " + e);
-            }finally{
+            } finally{
                 if(connection != null) connection.disconnect();
                 Log.d("database", "Connection disconnected");
             }
