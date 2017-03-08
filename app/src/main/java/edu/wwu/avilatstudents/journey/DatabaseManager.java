@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by avila_000 on 3/2/2017.
@@ -32,15 +33,18 @@ public class DatabaseManager {
     public static final String UPDATE_JOURNEY_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/update/";
     public static final String ADD_TRAVELER_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/add_traveler/";
     public static final String ADD_STEPS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/steps/update_steps/";
+    public static final String JOURNEY_INFO_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/get_data/";
+    public static final String USER_JOURNEYS_URI = "https://murmuring-taiga-37698.herokuapp.com/api/" + API_VERSION + "/journeys/retrieve_user_journeys/";
 
     public DatabaseManager(Context context){
         this.dbResponse = new StringBuilder();
         this.context = context;
     }
 
-    public String login(String url, String email, String password){
+    public String login(String email, String password){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
+        String response = null;
 
         try{
             jsonObjectInfo = new JSONObject();
@@ -53,15 +57,20 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "login");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+        try {
+            response = new DownloadData().execute(SIGN_IN_OR_OUT_URI, "POST", jsonObjectUser.toString(), "login").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     public String signUp(String username, String email, String password, String passwordConfirmation){
         JSONObject jsonObjectUser = null;
         JSONObject jsonObjectInfo = null;
+        String response = null;
 
         try{
             jsonObjectInfo = new JSONObject();
@@ -76,17 +85,19 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "signUp");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+        try {
+            response = new DownloadData().execute(SIGN_UP_URI, "POST", jsonObjectUser.toString(), "signUp").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return response;
     }
 
-    public String signOut(String email, String auth_token) {
-        new DownloadData().execute(SIGN_IN_OR_OUT_URI, "", "signOut", email, auth_token, "DELETE");
-        String dbResponseToReturn = dbResponse.toString();
-        dbResponse.delete(0, dbResponse.length());
-        return dbResponseToReturn;
+    public void signOut(String email, String auth_token) {
+        new DownloadData().execute(SIGN_IN_OR_OUT_URI, "DELETE", "", "signUp", email, auth_token);
     }
 
     private void updateSession(String outputData, String inputData){
@@ -144,6 +155,26 @@ public class DatabaseManager {
 
         }catch(Exception e){
             Log.e("database", "Error with DownloadData().execute: " + e);
+        }
+        return null;
+    }
+
+    public JSONObject getJourneyInfo(String email, String authentication, String journeyID){
+        try {
+            String input = new DownloadData().execute(JOURNEY_INFO_URI, "GET", "", "getJourneyInfo", email, authentication, journeyID).get();
+            return new JSONObject(input).getJSONObject("data").getJSONObject("journey");
+        }catch (Exception e){
+        Log.e("database", "Error retrieving journey info " + e);
+        }
+        return null;
+    }
+
+    public JSONObject getJourneys(String email, String authentication){
+        try {
+            String input = new DownloadData().execute(USER_JOURNEYS_URI, "GET", "", "getJourneys", email, authentication).get();
+            return new JSONObject(input).getJSONObject("journeys");
+        }catch (Exception e){
+            Log.e("database", "Error retrieving journey info " + e);
         }
         return null;
     }
@@ -225,7 +256,7 @@ public class DatabaseManager {
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                if(method.equals("addTravelerToJourney") || method.equals("updateJourney")){
+                if(method.equals("addTravelerToJourney") || method.equals("updateJourney") || method.equals("getJourneyInfo")){
                     String journeyID = strings[6];
                     connection.setRequestProperty("X-Journey-Id", journeyID);
                 }
@@ -272,23 +303,29 @@ public class DatabaseManager {
 
         private void receiveInput(){
             InputStream input = null;
+            InputStreamReader inputStreamReader = null;
+            int inputStreamData;
+            boolean error = false;
 
             try {
-                input = connection.getInputStream();
-            }catch(Exception e){
+                if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                    input = connection.getInputStream();
+                } else {
+                    input = connection.getErrorStream();
+                    error = true;
+                }
+                inputStreamReader = new InputStreamReader(input);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(Exception e) {
                 Log.e("database", "Input fail " + e);
             }
-
-            InputStreamReader inputStreamReader = new InputStreamReader(input);
-            int inputStreamData;
 
             try {
                 while ((inputStreamData = inputStreamReader.read()) != -1) {
                     inputData += (char) inputStreamData;
-/*                    Log.d("database", "Still reading from input stream");
-                    Log.d("database", "inputStreamData: " + inputStreamData);*/
                 }
-            }catch(IOException e){
+            } catch(IOException e){
                 Log.e("database", "Input fail: " + e);
             }
             Log.d("database", "Input success");

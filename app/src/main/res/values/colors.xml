@@ -9,4 +9,5 @@
     <color name="activityBkg">#88999999</color>
     <color name="mapMarkerStart">#ff527ec4</color>
     <color name="mapMarkerEnd">#ffcd585a</color>
+    <color name="errorColor">#fff04642</color>
 </resources>
