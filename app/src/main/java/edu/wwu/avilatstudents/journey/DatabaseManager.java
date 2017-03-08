@@ -47,7 +47,7 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, jsonObjectUser.toString(), "login");
+        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "login");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -70,7 +70,7 @@ public class DatabaseManager {
             Log.e("database", "Error creating JSONObject: " + e);
         }
 
-        new DownloadData().execute(url, jsonObjectUser.toString(), "signUp");
+        new DownloadData().execute(url, "POST", jsonObjectUser.toString(), "signUp");
         String dbResponseToReturn = dbResponse.toString();
         dbResponse.delete(0, dbResponse.length());
         return dbResponseToReturn;
@@ -95,7 +95,7 @@ public class DatabaseManager {
         }
     }
 
-    public void updateSteps(String url, String email, String steps, String authentication){
+    public void updateSteps(String url, String email, String authentication, String steps){
         JSONObject jsonObjectInfo = null;
 
         try{
@@ -106,10 +106,49 @@ public class DatabaseManager {
         }
 
         Log.d("database", "JSON: " + jsonObjectInfo.toString() + "\tEmail: " + email + "\tSteps: " + steps + "\tAuth: " + authentication);
-        new DownloadData().execute(url, jsonObjectInfo.toString(), "updateSteps", email, authentication);
+        new DownloadData().execute(url, "PATCH", jsonObjectInfo.toString(), "updateSteps", email, authentication);
     }
 
-    //PARAMETERS: (url, output, method, email, authentication)
+    public String createJourney(String url, String email, String authentication, String journeyTitle){
+        JSONObject jsonObjectJourney = null;
+        JSONObject jsonObjectInfo = null;
+        JSONObject jsonObjectInput = null;
+
+        try{
+            jsonObjectInfo = new JSONObject();
+            jsonObjectInfo.put("title", journeyTitle);
+
+            jsonObjectJourney = new JSONObject();
+            jsonObjectJourney.put("user", jsonObjectInfo);
+        }catch (JSONException e){
+            Log.e("database", "Error creating JSONObject: " + e);
+        }
+
+        try {
+            String input = new DownloadData().execute(url, "POST", jsonObjectJourney.toString(), "createJourney", email, authentication).get();
+            jsonObjectInput = new JSONObject(input).getJSONObject("data").getJSONObject("journey");
+            return jsonObjectInput.getString("id");
+
+        }catch(Exception e){
+            Log.e("database", "Error with DownloadData().execute: " + e);
+        }
+        return null;
+    }
+
+    public void addTravelerToJourney(String url, String email, String authentication, String journeyID){
+        JSONObject jsonObjectInfo = null;
+
+        try{
+            jsonObjectInfo = new JSONObject();
+            jsonObjectInfo.put("email", email);
+        }catch (JSONException e){
+            Log.e("database", "Error creating JSONObject: " + e);
+        }
+
+        new DownloadData().execute(url, "POST", jsonObjectInfo.toString(), "addTravelerToJourney", email, authentication, journeyID);
+    }
+
+    //PARAMETERS: (url, requestMethod, output, method, email, authentication, journeyID)
     private class DownloadData extends AsyncTask<String, Void, String> {
         HttpURLConnection connection = null;
         String inputData = "";
@@ -119,29 +158,35 @@ public class DatabaseManager {
 
             try{
                 URL url = new URL(strings[0]);
-                String outputData = strings[1];
-                String method = strings[2];
+                String requestMethod = strings[1];
+                String outputData = strings[2];
+                String method = strings[3];
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setInstanceFollowRedirects(true);
                 connection.setDoOutput(true);
-
+                connection.setRequestMethod(requestMethod);
                 connection.setRequestProperty("Content-type", "application/json");
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("User-Agent", "curl/7.47.0");
+
                 if(!(method.equals("signUp")) && !(method.equals("login"))){
-                    String email = strings[3];
-                    String authentication = strings[4];
+                    String email = strings[4];
+                    String authentication = strings[5];
                     connection.setRequestProperty("X-User-Email", email);
                     connection.setRequestProperty("X-User-Token", authentication);
                 }
-                connection.connect();
+                if(method.equals("addTravelerToJourney")){
+                    String journeyID = strings[6];
+                    connection.setRequestProperty("X-Journey-Id", journeyID);
+                }
 
+                connection.connect();
                 sendOutput(outputData);
                 receiveInput();
 
-                if((method.equals("signUp")) || (method.equals("login"))) updateSession(outputData, inputData);
-
-
+                if((method.equals("signUp")) || (method.equals("login"))){
+                    updateSession(outputData, inputData);
+                }
 
             }catch(Exception e){
                 Log.e("database", "Connection fail: " + e);
