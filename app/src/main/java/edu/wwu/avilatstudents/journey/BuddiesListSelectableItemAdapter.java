@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Created by myklhenn on 3/5/17.
  */
@@ -19,9 +21,9 @@ import android.widget.TextView;
 class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectableItem> {
 
     private final Activity context;
-    private final BuddiesListSelectableItem[] buddies;
+    private final ArrayList<BuddiesListSelectableItem> buddies;
 
-    BuddiesListSelectableItemAdapter(Activity context, BuddiesListSelectableItem[] buddies) {
+    BuddiesListSelectableItemAdapter(Activity context, ArrayList<BuddiesListSelectableItem> buddies) {
         super(context, R.layout.item_buddy, buddies);
         this.context = context;
         this.buddies = buddies;
@@ -30,7 +32,6 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
     @NonNull
     @Override
     public View getView(final int pos, View view, @NonNull ViewGroup parent) {
-        //LayoutInflater inflater = context.getLayoutInflater();
         BuddiesListSelectableItemViewHolder buddyItem;
 
         if (view == null) {
@@ -49,16 +50,16 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
             buddyItem = (BuddiesListSelectableItemViewHolder) view.getTag();
         }
 
-        buddyItem.buddyName.setText(this.buddies[pos].getName());
-        buddyItem.buddyIcon.setImageResource(this.buddies[pos].getIconRes());
-        if (this.buddies[pos].isSelected()) {
+        buddyItem.buddyName.setText(this.buddies.get(pos).getName());
+        buddyItem.buddyIcon.setImageResource(this.buddies.get(pos).getIconRes());
+        if (this.buddies.get(pos).isSelected()) {
             buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_done_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
-                    this.getContext(), R.color.itemBkgTransparent));
+                    this.getContext(), R.color.itemBkgTransparentSelected));
         } else {
-            buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_close_black_24dp);
+            buddyItem.selectedStateIcon.setImageResource(R.drawable.ic_add_black_24dp);
             buddyItem.itemContainer.setBackgroundColor(ContextCompat.getColor(
-                    this.getContext(), android.R.color.white));
+                    this.getContext(), R.color.itemBkgTransparent));
         }
         
         return view;
@@ -66,7 +67,7 @@ class BuddiesListSelectableItemAdapter extends ArrayAdapter<BuddiesListSelectabl
 
     @Override
     public BuddiesListSelectableItem getItem(int pos) {
-        return this.buddies[pos];
+        return this.buddies.get(pos);
     }
 }
 
