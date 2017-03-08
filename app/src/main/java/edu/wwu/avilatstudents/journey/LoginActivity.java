@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                                 emailET.getText().toString(),
                                 passwordET.getText().toString());
                     }else {
-                        dbResponse = databaseManager.signUp(url,
+                        dbResponse = databaseManager.signUp(
                                 usernameET.getText().toString(),
                                 emailET.getText().toString(),
                                 passwordET.getText().toString(),

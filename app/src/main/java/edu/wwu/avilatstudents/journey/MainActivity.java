@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         final SessionManager sessionManager = new SessionManager(this);
+        final DatabaseManager databaseManager = new DatabaseManager(this);
         Log.d("login", sessionManager.isLoggedIn() ? "true" : "false");
         if(!sessionManager.isLoggedIn()) {
             sessionManager.login();
@@ -77,11 +78,20 @@ public class MainActivity extends AppCompatActivity {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         SensorEventListener sensorEventListener = new SensorEventListener() {
-            long lastTimeStamp;
+            float stepsLastUpdate = 0;
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if(sensorEvent.values[0] > 0){
-                    //TODO: send sensorEvent.values[0] to database
+                if(sessionManager.isLoggedIn() && (sensorEvent.values[0] - stepsLastUpdate) >= 10){
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked more than 10 steps");
+                    databaseManager.updateSteps(
+                            sessionManager.getEmail(),
+                            Float.toString(sensorEvent.values[0]),
+                            sessionManager.getAuthentication());
+                    stepsLastUpdate = sensorEvent.values[0];
+                }else {
+                    Log.d("database", "" + (sensorEvent.values[0] - stepsLastUpdate) + "more steps");
+                    Log.d("database", "Walked less than 10 steps");
                 }
             }
 
@@ -160,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sessionManager.logout();
+                databaseManager.signOut(sessionManager.getEmail(), sessionManager.getAuthentication());
                 actionBar.show();
                 // reset nav buttons to base color (selected color applied appropriately in switch)
                 setNavButtonColorSelected(journeysFab);
@@ -167,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
                 visibleLayout.setVisibility(View.GONE);
                 journeysLayout.setVisibility(View.VISIBLE);
                 visibleLayout = journeysLayout;
-                visibleLayout.requestFocus();
             }
         });
 
