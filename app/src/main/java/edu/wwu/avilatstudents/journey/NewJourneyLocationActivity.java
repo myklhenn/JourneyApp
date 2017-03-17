@@ -75,6 +75,9 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         pathBtn = (AppCompatButton) findViewById(R.id.pathbutton);
         finishBtn = (AppCompatButton) findViewById(R.id.finishbutton);
         final TextView pathDistance = (TextView) findViewById(R.id.distance);
+
+        // replace with draggable markers and a remove button
+        // or old paper prototype concept
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,6 +102,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 }
             }
         });
+
+
         pathBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -233,7 +238,6 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 if (nextPath == allRoutes) {
                     nextPath = 0;
                 }
-                System.out.println(nextPath);
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Your journey's distance: " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
                 String miles = "" + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
