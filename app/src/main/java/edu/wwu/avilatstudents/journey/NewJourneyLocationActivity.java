@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -42,6 +43,8 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
     AppCompatButton backBtn;
     AppCompatButton pathBtn;
     AppCompatButton finishBtn;
+    AppCompatButton removeStartButton;
+    AppCompatButton removeEndButton;
     DatabaseManager dbm;
     SessionManager sessM;
 
@@ -72,12 +75,17 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         final TextView beginningJ = (TextView) findViewById(R.id.chooseOne);
         final TextView endingJ = (TextView) findViewById(R.id.chooseTwo);
         backBtn = (AppCompatButton) findViewById(R.id.backbutton);
+        removeStartButton = (AppCompatButton) findViewById(R.id.removeStartButton);
+        removeEndButton = (AppCompatButton) findViewById(R.id.removeEndButton);
         pathBtn = (AppCompatButton) findViewById(R.id.pathbutton);
         finishBtn = (AppCompatButton) findViewById(R.id.finishbutton);
         final TextView pathDistance = (TextView) findViewById(R.id.distance);
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 if (start_end_markers.size() == 1) {
                     mMap.clear();
                     start_end_markers.clear();
@@ -99,6 +107,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 }
             }
         });
+
         pathBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,7 +137,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 String id = bundle.getString("journeyId");
                 String journeyName = bundle.getString("journeyTitle");
                 dbm.finalizeTravelers(sessM.getEmail(),sessM.getAuthentication(), id);
-                // put all info into database
+                /*put all journey info into database*/
                 dbm.updateJourney(sessM.getEmail(),sessM.getAuthentication(), id, journeyName, Double.toString(start_end_markers.get(0).latitude),
                         Double.toString(start_end_markers.get(0).longitude), Double.toString(start_end_markers.get(1).latitude), Double.toString(start_end_markers.get(1).longitude), startLocation, endLocation, stepDistance);
 
@@ -158,6 +167,7 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                     );
                     endingJ.setVisibility(View.GONE);
                     backBtn.setVisibility(View.VISIBLE);
+
                     pathBtn.setText("Find Route");
                     pathBtn.setVisibility(View.VISIBLE);
                 }
@@ -220,11 +230,9 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
         String distance;
         final TextView pathDistance = (TextView) findViewById(R.id.distance);
         try {
-            // route data in json objects/arrays
             final JSONObject json = new JSONObject(result);
             routeArray = json.getJSONArray("routes");
             int allRoutes = routeArray.length();
-            System.out.println(allRoutes);
             if (allRoutes == 0) {
                 distance = "No valid routes available";
                 pathDistance.setText(distance);
@@ -233,7 +241,9 @@ public class NewJourneyLocationActivity extends FragmentActivity implements OnMa
                 if (nextPath == allRoutes) {
                     nextPath = 0;
                 }
-                System.out.println(nextPath);
+
+                Log.d("route number:", Integer.toString(allRoutes));
+
                 routeLegs = ((JSONObject) routeArray.get(nextPath)).getJSONArray("legs");
                 distance = "Your journey's distance: " + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");
                 String miles = "" + ((JSONObject) ((JSONObject) routeLegs.get(0)).get("distance")).get("text");

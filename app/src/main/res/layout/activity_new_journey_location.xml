@@ -104,6 +104,38 @@
         android:visibility="gone" />
 
     <android.support.v7.widget.AppCompatButton
+        android:id="@+id/removeStartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="45dp"
+        android:layout_marginStart="30dp"
+        android:backgroundTint="@color/journeyAccent"
+        android:elevation="2dp"
+        android:minHeight="55dp"
+        android:minWidth="80dp"
+        android:text="X"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/removeEndButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="45dp"
+        android:layout_marginStart="30dp"
+        android:backgroundTint="@color/journeyAccent"
+        android:elevation="2dp"
+        android:minHeight="55dp"
+        android:minWidth="80dp"
+        android:text="X"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/pathbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
